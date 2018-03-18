@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>data/equipaA.csv</file>
+        <file>data/equipaB.csv</file>
+        <file>data/minon-02.csv</file>
+    </qresource>
+</RCC>
