@@ -9,9 +9,15 @@ QT       += core gui
 TARGET = policia
 TEMPLATE = app
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    team.cpp \
+    player.cpp
+    player.cpp
 
-HEADERS  +=
+
+HEADERS  += \
+    player.h \
+    team.h
 
 FORMS    +=
 
