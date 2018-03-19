@@ -5,6 +5,11 @@
 #include <QMainWindow>
 #include <QStandardItemModel>
 #include <QtGui>
+#include <QLabel>
+#include <QBoxLayout>
+#include <QTableView>
+
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -26,9 +31,9 @@ int main(int argc, char *argv[])
     csvModelA->setColumnCount(2);
     csvModelA->setHorizontalHeaderLabels(QStringList() << "MAC" << "Description");
 
-    QFile fileA(":/equipaA.csv");
+    QFile fileA(":/data/equipaA.csv");
     if ( !fileA.open(QFile::ReadOnly | QFile::Text) ) {
-        qDebug() << "File not exists";
+        qDebug() << "File A does not exists ";
     } else {
         QTextStream in(&fileA);
         while (!in.atEnd())
@@ -49,9 +54,9 @@ int main(int argc, char *argv[])
     csvModelB->setColumnCount(2);
     csvModelB->setHorizontalHeaderLabels(QStringList() << "MAC" << "Description");
 
-    QFile fileB(":/equipaB.csv");
+    QFile fileB(":/data/equipaB.csv");
     if ( !fileB.open(QFile::ReadOnly | QFile::Text) ) {
-        qDebug() << "File not exists";
+        qDebug() << "File B does not exists ";
     } else {
         QTextStream in(&fileB);
         while (!in.atEnd())

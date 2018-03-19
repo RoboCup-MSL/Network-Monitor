@@ -5,13 +5,13 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += widgets
 
 TARGET = policia
 TEMPLATE = app
 
 SOURCES += main.cpp \
     team.cpp \
-    player.cpp
     player.cpp
 
 
