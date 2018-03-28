@@ -1,0 +1,8 @@
+#RoboCup Team Descriptor
+Team Name: <Team_Name_Acronym>
+#Players - All lines below will be interpreted as the Players of this team with the following notation: <PLAYER MAC ADDRESS>,<PLAYER ID>
+01:02:03:04:05:06,Player1
+05:06:07:08:09:0a,Player2
+
+
+
