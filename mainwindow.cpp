@@ -13,8 +13,7 @@
 void MainWindow::display()
 {
     QLabel *queryLabelStations = new QLabel(QApplication::translate("Policia", "Stations"));
-    QFile::copy(":/data/minon-02.csv", "/home/ivo/cambada/robocop/trunk/data/temp.csv");
-    QFile fileStations("/home/ivo/cambada/robocop/trunk/data/temp.csv");
+    QFile fileStations("./data/minon-02.csv");
 
     QTextStream in(&fileStations);
     QString line;
@@ -65,10 +64,6 @@ void MainWindow::display()
     setCentralWidget(resultViewStations);
     qDebug() << "after"<<endl;
     fileStations.close();
-    if ( !fileStations.remove())
-    {
-        qDebug() << "falhou a apagar";
-    }
 }
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
