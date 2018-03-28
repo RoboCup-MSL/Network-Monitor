@@ -13,6 +13,7 @@
 void MainWindow::display()
 {
     QLabel *queryLabelStations = new QLabel(QApplication::translate("Policia", "Stations"));
+    //QFile::copy("./data/minon-02.csv", "./data/temp.csv");
     QFile fileStations("./data/minon-02.csv");
 
     QTextStream in(&fileStations);
