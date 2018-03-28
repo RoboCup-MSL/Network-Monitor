@@ -1,27 +1,15 @@
 #include "player.h"
 
-player::player()
-{
-    sta_name = QString("");
-    sta_first_time_seen = QDateTime();
-    sta_last_time_seen = QDateTime();
-    sta_power=0;
-    sta_packets=0;
-    sta_team = QString("");
-    sta_connected = false;
-    sta_bandwith = 0;
-}
-
 player::player(QString name, QString mac, QString team)
 {
-    sta_name = name;
-    sta_mac = mac;
-    sta_team = team;
+    sta_name = QString(name);
+    sta_mac = QString(mac);
+    sta_team = QString(team);
 }
 
 player::player(QString mac)
 {
-    sta_mac = mac;
+    sta_mac = QString(mac);
 }
 
 void player::update(QDateTime first_seen, QDateTime last_seen, int packets, int power)
