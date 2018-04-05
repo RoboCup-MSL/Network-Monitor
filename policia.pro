@@ -13,7 +13,8 @@ TEMPLATE = app
 SOURCES += main.cpp \
     team.cpp \
     player.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    robocop_funcs.cpp
 
 
 HEADERS  += \
