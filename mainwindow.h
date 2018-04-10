@@ -2,8 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QTableWidget>
-
+#include "gui.h"
 
 class MainWindow : public QMainWindow
 {
@@ -11,14 +10,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
 
-signals:
-
-public slots:
-    void display();
-
 private:
-    QTimer *timer;
-    QTableWidget* resultViewStations;
+    gui* robocopGui;
 };
 
 #endif // MAINWINDOW_H

@@ -49,7 +49,6 @@ bool get_team_by_file(QString team_file){
     return true;
 }
 
-
 void printAllPlayers(void){
 
     qDebug() << "###############ALL PLAYERS LIST #################" << endl;

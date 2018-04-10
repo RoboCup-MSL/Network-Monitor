@@ -3,6 +3,7 @@
 #include <QTextStream>
 #include <QDebug>
 #include <QMainWindow>
+#include <QInputDialog>
 
 #include <qobject.h>
 
@@ -20,12 +21,14 @@ void printAllPlayers(void);
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    qDebug() << "start"<<endl;
     MainWindow w;
 
-    QString teamA("./equipa1.txt");
+    //set app name
+    QGuiApplication::setApplicationDisplayName(MainWindow::tr("RoboCop"));
     QString teamB("./equipa2.txt");
 
+    //QString teamA("./equipa1.txt");
+    //get_team_by_file(teamA);
 
     get_team_by_file(teamA);
     get_team_by_file(teamB);
