@@ -31,6 +31,7 @@ public:
     //Getters
     QString name();
     QString mac();
+    QString team_name();
     QDateTime firstTimeSeen();
     QDateTime lastTimeSeen();
     bool isConnected();

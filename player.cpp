@@ -39,6 +39,10 @@ QString player::mac(){
     return sta_mac;
 }
 
+QString player::team_name(){
+    return sta_team;
+}
+
 void player::connected()
 {
     sta_connected = true;

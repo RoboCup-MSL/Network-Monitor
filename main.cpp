@@ -15,7 +15,7 @@ vector<player> AllPlayers;
 vector<team>     AllTeams;
 
 bool get_team_by_file(QString team_file);
-
+void printAllPlayers(void);
 
 int main(int argc, char *argv[])
 {
@@ -24,14 +24,20 @@ int main(int argc, char *argv[])
     MainWindow w;
 
     QString teamA("./equipa1.txt");
+    QString teamB("./equipa2.txt");
 
 
     get_team_by_file(teamA);
+    get_team_by_file(teamB);
 
 
-    w.show();
+    printAllPlayers();
+
+
+    //w.show();
 
     qDebug() << "end"<<endl;
 
-    return a.exec();
+    //return a.exec();
+    return 0;
 }
