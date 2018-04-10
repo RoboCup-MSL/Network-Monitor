@@ -4,25 +4,27 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
-QT       += widgets
-
-TARGET = policia
-TEMPLATE = app
-
-SOURCES += main.cpp \
-    team.cpp \
-    player.cpp \
-    mainwindow.cpp \
-    robocop_funcs.cpp
+QT       += widgets core gui
 
 
 HEADERS  += \
+    gui.h \
     player.h \
     team.h \
-    mainwindow.h
+    mainwindow.h \
 
-FORMS    +=
+
+SOURCES += \
+    gui.cpp \
+    team.cpp \
+    player.cpp \
+    robocop_funcs.cpp \
+    main.cpp \
+    mainwindow.cpp
+
 
 RESOURCES += \
     files.qrc
+
+TARGET = policia
+TEMPLATE = app
