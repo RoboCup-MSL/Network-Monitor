@@ -1,5 +1,8 @@
 #include "player.h"
 
+player::player(){
+}
+
 player::player(QString name, QString mac, QString team)
 {
     sta_name = QString(name);

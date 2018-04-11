@@ -18,6 +18,7 @@ private:
     int sta_bandwith;
 public:
     //Constructors
+    player();
     player(QString name, QString mac, QString team);
     player(QString mac);
     //End Constructors

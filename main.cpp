@@ -17,6 +17,7 @@ vector<team>     AllTeams;
 
 bool get_team_by_file(QString team_file);
 void printAllPlayers(void);
+void printAllTeams(void);
 
 int main(int argc, char *argv[])
 {
@@ -27,7 +28,7 @@ int main(int argc, char *argv[])
     QGuiApplication::setApplicationDisplayName(MainWindow::tr("RoboCop"));
     QString teamB("./equipa2.txt");
 
-    //QString teamA("./equipa1.txt");
+    QString teamA("./equipa1.txt");
     //get_team_by_file(teamA);
 
     get_team_by_file(teamA);
@@ -35,6 +36,8 @@ int main(int argc, char *argv[])
 
 
     printAllPlayers();
+    printAllTeams();
+
 
 
     //w.show();

@@ -3,22 +3,22 @@
 
 
 team::team(QString new_name){
-    name = new_name;
+    tname = new_name;
     inGame = false;
 }
 
-void team::insertPlayer(player new_player){
+void team::insertPlayer(player &new_player){
     players.push_back(new_player);
 }
 
 bool team::get_player(unsigned int num, player &r_player){
     if(players.size() < 1 ){
-        qDebug() << "There are no players on the team " << name << endl;
+        qDebug() << "There are no players on the team " << tname << endl;
         return false;
     }
 
     if( (num >= players.size()) ){
-        qDebug() << "Player number " << num <<" doesnt exist on team" << name <<endl;
+        qDebug() << "Player number " << num <<" doesnt exist on team" << tname <<endl;
         return false;
     }
 
@@ -38,4 +38,8 @@ bool team::get_player_by_mac(QString new_sta_mac, player &r_player){
         }
     }
     return false;
+}
+
+QString team::name(){
+    return tname;
 }
