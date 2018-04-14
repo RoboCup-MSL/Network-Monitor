@@ -6,13 +6,13 @@ player::player(){
 player::player(QString name, QString mac, QString team)
 {
     sta_name = QString(name);
-    sta_mac = QString(mac);
+    sta_mac = QString(mac.toUpper()); // Saving MAC addresses always in the same case
     sta_team = QString(team);
 }
 
 player::player(QString mac)
 {
-    sta_mac = QString(mac);
+    sta_mac = QString(mac.toUpper()); // Saving MAC addresses always in the same case
 }
 
 void player::update(QDateTime first_seen, QDateTime last_seen, int packets, int power)
@@ -59,6 +59,16 @@ void player::disconnected()
 bool player::isConnected()
 {
     return sta_connected;
+}
+
+int player::power()
+{
+    return sta_power;
+}
+
+int player::packets()
+{
+    return sta_packets;
 }
 
 

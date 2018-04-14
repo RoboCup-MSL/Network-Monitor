@@ -1,11 +1,31 @@
 #include <QFile>
 #include <QDebug>
 #include <QTextStream>
+#include <QString>
 #include "player.h"
 #include "team.h"
 
+
+enum STATION_PROPERTIES
+{
+    STATION_MAC = 0,
+    FIRST_TIME_SEEN = 1,
+    LAST_TIME_SEEN = 2,
+    POWER = 3,
+    PACKETS = 4,
+};
+
+enum PLAYER_PROPERTIES{
+    PLAYER_MAC = 0,
+    PLAYER_NAME = 1,
+};
+
+#define MIN_PROPERTIES 5
+
 extern vector<player>   AllPlayers;
 extern vector<team>     AllTeams;
+static player* findStation(QString sta_mac);
+static team* get_team_by_name(QString tname);
 
 
 bool get_team_by_file(QString team_file){
@@ -26,6 +46,10 @@ bool get_team_by_file(QString team_file){
         if(line.startsWith("Team Name:") == true){
             QStringList tname = line.split("Team Name:", QString::SkipEmptyParts);
             qDebug() << "Found Team Name: " <<  qPrintable((tname.at(0)).trimmed()) << endl;
+            if(get_team_by_name(tname.at(0)) != NULL){
+                qDebug("Team %s Already Exists in the system, will skip", qPrintable(tname.at(0).trimmed()));
+                return false;
+            }
             team1 = new team(tname.at(0));
             while(!tstream.atEnd()){
                 QString line2 = tstream.readLine();
@@ -39,10 +63,17 @@ bool get_team_by_file(QString team_file){
 
                 qDebug() << "Found Candidate for Player: " <<  qPrintable((tplayer.at(1)).trimmed()) << " with MAC: "
                            <<  qPrintable((tplayer.at(0)).trimmed()) << endl;
-
-                player* player1 = new player(tplayer.at(1), tplayer.at(0), tname.at(0));
-                AllPlayers.push_back(*player1);
-                team1->insertPlayer(*player1);
+                player *playerx;
+                if((playerx = findStation(tplayer.at(PLAYER_MAC).trimmed()))==NULL){
+                    qDebug("STA_MAC %s not already in the player LIST will INSERT\n",qPrintable(tplayer.at(PLAYER_MAC).toUpper().trimmed()) );
+                    player* player1 = new player(tplayer.at(PLAYER_NAME).trimmed(), tplayer.at(PLAYER_MAC).trimmed(), tname.at(0).trimmed());
+                    AllPlayers.push_back(*player1);
+                    team1->insertPlayer(*player1);
+                }
+                else{
+                    qDebug("MAC %s already exists in data base in team %s, will skip",qPrintable(tplayer.at(PLAYER_MAC).trimmed()), qPrintable(playerx->team_name()));
+                    continue;
+                }
             }
         }
     }
@@ -55,7 +86,11 @@ void printAllPlayers(void){
     qDebug() << "###############ALL PLAYERS LIST #################" << endl;
 
     for(unsigned int i = 0; i < AllPlayers.size(); i++){
-        qDebug("Player %3d, Name %20s, MAC %20s, Team %10s\n", i, qPrintable(AllPlayers[i].name()), qPrintable(AllPlayers[i].mac()), qPrintable(AllPlayers[i].team_name()));
+        qDebug("Player %3d, Name %20s, MAC %20s, Team %10s, First Time Seen %s, Last Time Seen %s, Power %d dBm, Packets %d\n",
+               i, qPrintable(AllPlayers[i].name()), qPrintable(AllPlayers[i].mac()),
+               qPrintable(AllPlayers[i].team_name()),
+               qPrintable(AllPlayers[i].firstTimeSeen().toString("dd-MM-yyyy hh:mm:ss")),
+               qPrintable(AllPlayers[i].lastTimeSeen().toString("dd-MM-yyyy hh:mm:ss")), AllPlayers[i].power(), AllPlayers[i].packets());
     }
 
 }
@@ -65,17 +100,89 @@ void printAllTeams(void){
     qDebug() << "###############ALL TEAMS LIST #################" << endl;
 
     for(unsigned int i = 0; i<AllTeams.size(); i++){
-       qDebug("**TEAM %s\n", qPrintable(AllTeams[0].name()));
+       qDebug("**TEAM %s\n", qPrintable(AllTeams[i].name()));
        for(int j = 0; j < AllTeams[i].get_team_size(); j++){
             player playerx;
             AllTeams[i].get_player(j, playerx);
             qDebug("Player %3d, Name %20s, MAC %20s, Team %10s\n", j, qPrintable(playerx.name()), qPrintable(playerx.mac()), qPrintable(playerx.team_name()));
-
        }
-             
-       
+      }
+}
+
+void parseNetCapture(QString capture_file){
+
+    QFile capture_descriptor(capture_file);
+    QTextStream cap_stream(&capture_descriptor);
+
+    if(capture_descriptor.open(QIODevice::ReadOnly | QIODevice::Text)!= true){
+        qDebug() << "Error, Couldn't open file" << qPrintable(capture_file) << endl;
+        return;
     }
 
+    while(!cap_stream.atEnd()){
+        QString line = cap_stream.readLine();
+        //qDebug("%s\n",qPrintable(line));
+       if(line.startsWith("Station MAC")==false)
+           continue;
+       while(!cap_stream.atEnd()){
+           QString line2 = cap_stream.readLine();
+           QStringList sta_props = line2.split(",", QString::SkipEmptyParts);
+           if(sta_props.size()<MIN_PROPERTIES){
+               qDebug("Invalid STATION %s\n",qPrintable(line2));
+               continue;
+           }
+           QString sta_mac = sta_props.at(STATION_MAC).trimmed();
+
+           QDateTime first_seen = QDateTime::fromString(sta_props.at(FIRST_TIME_SEEN).trimmed(),"yyyy-MM-dd hh:mm:ss");
+           QDateTime last_seen = QDateTime::fromString(sta_props.at(LAST_TIME_SEEN).trimmed(),"yyyy-MM-dd hh:mm:ss");
+           int power = sta_props.at(POWER).toInt();
+           int packets = sta_props.at(PACKETS).toInt();
+           qDebug("##Candidate Station Found \n");
+           qDebug("STA_MAC %s, First Time Seen %s, Last Time Seen %s, Power %d dBm, Packets %d \n",
+                  qPrintable(sta_mac), qPrintable(first_seen.toString("dd-MM-yyyy hh:mm:ss")), qPrintable(last_seen.toString("dd-MM-yyyy hh:mm:ss")), power, packets);
+
+           player *player1;
+
+           if((player1 = findStation(sta_mac) ) != NULL){
+               qDebug("Station is already at database with %s, %s, %s", qPrintable((player1->mac())), qPrintable((player1->name())), qPrintable(player1->team_name()));
+               player1->update(first_seen, last_seen, packets, power);
+           }
+
+
+       }
+
+    }
+}
+
+
+
+static player* findStation(QString sta_mac){
+
+    for(unsigned int i = 0; i < AllPlayers.size(); i++){
+        if(QString::compare(sta_mac, AllPlayers[i].mac(), Qt::CaseInsensitive) == 0)
+            return &AllPlayers[i];
+    }
+
+    return NULL;
 
 
 }
+
+static team *get_team_by_name(QString tname){
+
+    for(unsigned int i = 0; i < AllTeams.size(); i++){
+        if(tname.trimmed() == AllTeams[i].name())
+                return &AllTeams[i];
+    }
+
+    return NULL;
+
+
+}
+
+
+
+
+
+
+

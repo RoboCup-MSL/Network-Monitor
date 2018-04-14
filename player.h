@@ -11,8 +11,8 @@ private:
     QString sta_mac;
     QDateTime sta_first_time_seen;
     QDateTime sta_last_time_seen;
-    int sta_power;
-    int sta_packets;
+    int sta_power = 0;
+    int sta_packets = 0;
     QString sta_team;
     bool sta_connected;
     int sta_bandwith;
@@ -36,8 +36,8 @@ public:
     QDateTime firstTimeSeen();
     QDateTime lastTimeSeen();
     bool isConnected();
-
-
+    int power();
+    int packets();
 };
 
 #endif // PLAYER_H

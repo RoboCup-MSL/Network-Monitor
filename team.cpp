@@ -3,7 +3,7 @@
 
 
 team::team(QString new_name){
-    tname = new_name;
+    tname = QString(new_name.trimmed());
     inGame = false;
 }
 

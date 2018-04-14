@@ -1,8 +1,8 @@
 #RoboCup Team Descriptor
 Team Name: BANANAPOWER
 #Players - All lines below will be interpreted as the Players of this team with the following notation: <PLAYER MAC ADDRESS>,<PLAYER ID>
-01:02:03:04:05:06, Cesar
+0a:02:03:04:05:06, Cesar
 05:06:07:08:09:0a, Ivo
 Coiso
-05:06:07:08:09:0a, Manuela
+05:06:07:08:09:01, Manuela
 Ola

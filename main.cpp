@@ -18,6 +18,7 @@ vector<team>     AllTeams;
 bool get_team_by_file(QString team_file);
 void printAllPlayers(void);
 void printAllTeams(void);
+void parseNetCapture(QString capture_file);
 
 int main(int argc, char *argv[])
 {
@@ -27,8 +28,9 @@ int main(int argc, char *argv[])
     //set app name
     QGuiApplication::setApplicationDisplayName(MainWindow::tr("RoboCop"));
     QString teamB("./equipa2.txt");
-
     QString teamA("./equipa1.txt");
+    QString teamC("./equipa3.txt");
+    QString capFile("./lab-03.csv");
     //get_team_by_file(teamA);
 
     get_team_by_file(teamA);
@@ -37,6 +39,13 @@ int main(int argc, char *argv[])
 
     printAllPlayers();
     printAllTeams();
+    qDebug("##############################################################\n");
+    parseNetCapture(capFile);
+    qDebug("##############################################################\n");
+    printAllPlayers();
+
+
+
 
 
 
