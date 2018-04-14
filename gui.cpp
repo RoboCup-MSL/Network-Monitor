@@ -9,6 +9,9 @@
 #include <QTableWidget>
 #include <QtWidgets>
 #include "gui.h"
+#include "team.h"
+
+extern vector<team>     AllTeams;
 
 int channelList[NUMBEROFWIFICHANNELS]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,34,36,38,40,42,44,46,48,52,56,60,64,100,104,108,112,116,120,124,128,132,136,140,149,153,157,161};
 
@@ -20,7 +23,7 @@ gui::gui(QWidget *parent) : QWidget(parent)
 
     //Question: is toolbox the best solution?
     toolbox = new QToolBox;
-    toolbox->setMinimumSize(500, 250);
+    toolbox->setMinimumSize(750, 500);
     baseLayout->addWidget(toolbox);
 
     //use grid
@@ -32,11 +35,10 @@ gui::gui(QWidget *parent) : QWidget(parent)
     int frameStyle = QFrame::Sunken | QFrame::Panel;
     networkNameLabel = new QLabel;
     networkNameLabel->setFrameStyle(frameStyle);
-    QPushButton *networkNameButton = new QPushButton(tr("Click to insert network name"));
+    QPushButton *networkNameButton = new QPushButton(tr("Click to insert network BSSID:"));
     layout->addWidget(networkNameButton, 0, 0);
     layout->addWidget(networkNameLabel, 0, 1);
     //connect to an action when we receive the input
-
     connect(networkNameButton, &QAbstractButton::clicked, this, &gui::setNetworkName);
 
     //Button 2
@@ -61,13 +63,13 @@ gui::gui(QWidget *parent) : QWidget(parent)
     comboBoxTeamA = new QComboBox;
     comboBoxTeamB = new QComboBox;
 
-    //TODO load existing teams
-    for(int i = 0; i < 5; i++)
+    //load existing teams
+    for(int i=0; i<AllTeams.size(); i++ )
     {
-        comboBoxTeamA->addItem("Equipa " + QString::number(i));
-        comboBoxTeamB->addItem("Equipa " + QString::number(i));
-
+        comboBoxTeamA->addItem(AllTeams[i].name());
+        comboBoxTeamB->addItem(AllTeams[i].name());
     }
+
     connect(comboBoxTeamA, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &gui::on_comboBoxTeamA_currentIndexChanged);
     connect(comboBoxTeamB, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &gui::on_comboBoxTeamB_currentIndexChanged);
 
@@ -76,136 +78,218 @@ gui::gui(QWidget *parent) : QWidget(parent)
     layout->addWidget(teamBTextLabel, 3, 0);
     layout->addWidget(comboBoxTeamB, 3, 1);
 
-    //codigo de teste da tabela e do timer
-    queryLabelStations = new QLabel(QApplication::translate("Policia", "Stations"));
-    QFile fileStations("./team/minon-02.csv");
+    //Tables with stations by team
+    //Note: I should have done it in a function
+    //first I need the current time
 
-    QTextStream in(&fileStations);
-    QString line;
-    QStandardItemModel *csvModelStations = new QStandardItemModel();
+    //Team A
+    teamATableLabel = new QLabel(AllTeams[comboBoxTeamA->currentIndex()].name());
+    QStandardItemModel *teamAStations = new QStandardItemModel();
+    QTableView *teamAResultView = new QTableView();
+    teamAResultView->setModel(teamAStations);
+    teamAResultView->horizontalHeader()->setStretchLastSection(true);
 
-    QTableView *resultViewStations = new QTableView();
-    resultViewStations->setModel(csvModelStations);
+    teamAResultView->setWordWrap(true);
+    teamAResultView->verticalHeader()->hide();
+    teamAResultView->setSortingEnabled(true);
+    teamAStations->setColumnCount(4);
+    teamAStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name");
 
-    csvModelStations->setColumnCount(5);
-    csvModelStations->setHorizontalHeaderLabels(QStringList() << "MAC" <<"First Seen"<<"Last Seen" <<"POWER"<< "Packets");
-
-    if ( !fileStations.open(QFile::ReadOnly | QFile::Text) )
+    for(int i=0;i<AllTeams[comboBoxTeamA->currentIndex()].get_team_size();i++)
     {
-        qDebug() << "File minon-02 does not exists ";
-    } else {
-        QString lineToSkip;
+        player teamAPlayer;
+        QList<QStandardItem *> standardItemsList;
 
-        line = in.readLine();
-        int aux=0;
-        do{
-           qDebug() << "Skipping line=" << lineToSkip <<endl;
-           lineToSkip = in.readLine();
-
-           continue;
-        } while((lineToSkip.indexOf("Station MAC")!=0)&& (!in.atEnd()));
-        do{
-            line = in.readLine();
-            QList<QStandardItem *> standardItemsList;
-
-            foreach (QString item, line.split(","))
-            {
-                aux++;
-                qDebug() << "line split=" << aux <<endl;
-
-                standardItemsList.append(new QStandardItem(item));
-            }
-            csvModelStations->insertRow(csvModelStations->rowCount(), standardItemsList);
-        }        while (!in.atEnd());
+        AllTeams[comboBoxTeamA->currentIndex()].get_player(i,teamAPlayer);
+        standardItemsList.append(new QStandardItem(teamAPlayer.mac()));
+        standardItemsList.append(new QStandardItem(teamAPlayer.firstTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamAPlayer.lastTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamAPlayer.name()));
+        //standardItemsList.setStyleSheet("QListView { background-color: #80FF80 }");
+        teamAStations->insertRow(teamAStations->rowCount(), standardItemsList);
 
     }
+    teamAResultView->resizeColumnToContents(0);
+    teamAResultView->resizeColumnToContents(1);
+    teamAResultView->resizeColumnToContents(2);
+    teamAResultView->resizeColumnToContents(3);
+    teamAResultView->sortByColumn(2, Qt::DescendingOrder);
 
-    layout->addWidget(queryLabelStations, 4,0,1,2);
-    layout->addWidget(resultViewStations, 5,0,1,2);
+    layout->addWidget(teamATableLabel, 4,0,1,2);
+    layout->addWidget(teamAResultView, 5,0,1,2);
+
+    //Team B
+    teamBTableLabel = new QLabel(AllTeams[comboBoxTeamB->currentIndex()].name());
+    QStandardItemModel *teamBStations = new QStandardItemModel();
+    QTableView *teamBResultView = new QTableView();
+    teamBResultView->setModel(teamBStations);
+    teamBResultView->horizontalHeader()->setStretchLastSection(true);
+    teamBResultView->setSortingEnabled(true);
+
+    teamBStations->setColumnCount(4);
+    teamBStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  );
+    teamBResultView->verticalHeader()->hide();
+
+    for(int i=0;i<AllTeams[comboBoxTeamB->currentIndex()].get_team_size();i++)
+    {
+        player teamBPlayer;
+        QList<QStandardItem *> standardItemsList;
+
+        AllTeams[comboBoxTeamB->currentIndex()].get_player(i,teamBPlayer);
+        standardItemsList.append(new QStandardItem(teamBPlayer.mac()));
+        standardItemsList.append(new QStandardItem(teamBPlayer.firstTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamBPlayer.lastTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamBPlayer.name()));
+
+        teamBStations->insertRow(teamBStations->rowCount(), standardItemsList);
+    }
+    teamBResultView->resizeColumnToContents(0);
+    teamBResultView->resizeColumnToContents(1);
+    teamBResultView->resizeColumnToContents(2);
+    teamBResultView->resizeColumnToContents(3);
+    teamBResultView->sortByColumn(2, Qt::DescendingOrder);
+
+    layout->addWidget(teamBTableLabel, 6,0,1,2);
+    layout->addWidget(teamBResultView, 7,0,1,2);
+
     toolbox->addItem(page, tr("Game"));
 
-    fileStations.close();
-    qDebug()<<"mainwindow timer 1"<<endl;
+    //refresh every second
     timer = new QTimer(this);
     timer->setInterval(750);
     timer->start(1000);
-    qDebug()<<"mainwindow timer 2"<<endl;
     connect(timer, &QTimer::timeout, this, &gui::display);
+}
+
+bool isValidMacAddress(const char* mac) {
+    int i = 0;
+    int s = 0;
+
+    while (*mac) {
+        if (std::isxdigit(*mac)) {
+            i++;
+        } else if (*mac == ':' || *mac == '-') {
+            if (i == 0 || i / 2 - 1 != s)
+                break;
+            ++s;
+        }
+        else {
+            s = -1;
+        }
+        ++mac;
+    }
+    return (i == 12 && (s == 5 || s == 0));
 }
 
 void gui::setNetworkName()
 {
-    bool ok;
-    QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-                                         tr("User name:"), QLineEdit::Normal,
-                                         QDir::home().dirName(), &ok);
-    if (ok && !text.isEmpty())
+    bool okButton;
+    bool isValidMac;
+
+
+    QString text= QInputDialog::getText(this, tr("Game Network"),
+                                         tr("Insert BSSID:\n(BSSID is the MAC address of the wireless access point)"), QLineEdit::Normal,
+                                         QDir::home().dirName(), &okButton);
+
+    isValidMac = isValidMacAddress(text.toStdString().c_str());
+
+    if (okButton && !text.isEmpty() && isValidMac)
         networkNameLabel->setText(text);
+
+    if(!isValidMac)
+    {
+        QMessageBox::warning(
+            this,
+            tr("Error!"),
+            tr("Not a valid BSSID.") );
+    }
 }
 
 void gui::on_comboBoxWifiChannel_currentIndexChanged()
 {
-    //QMessageBox::information(this, "Item Selection",
-    //                             ComboBoxWifiChannel->currentText());
+
 }
 
 void gui::on_comboBoxTeamA_currentIndexChanged()
 {
-
+    delete teamATableLabel;
+    teamATableLabel = new QLabel(AllTeams[comboBoxTeamA->currentIndex()].name());
+    layout->addWidget(teamATableLabel, 4,0,1,2);
 }
 
 void gui::on_comboBoxTeamB_currentIndexChanged()
 {
-
+    delete teamBTableLabel;
+    teamBTableLabel = new QLabel(AllTeams[comboBoxTeamB->currentIndex()].name());
+    layout->addWidget(teamBTableLabel, 6,0,1,2);
 }
 
 void gui::display()
 {
-    QFile fileStations("./team/minon-02.csv");
+    //Team A
+    QStandardItemModel *teamAStations = new QStandardItemModel();
+    QTableView *teamAResultView = new QTableView();
+    teamAResultView->setModel(teamAStations);
+    teamAResultView->setWordWrap(1);
 
-    QTextStream in(&fileStations);
-    QString line;
-    QStandardItemModel *csvModelStations = new QStandardItemModel();
+    teamAStations->setColumnCount(4);
+    teamAStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name");
+    teamAResultView->horizontalHeader()->setStretchLastSection(true);
+    teamAResultView->setWordWrap(true);
+    teamAResultView->verticalHeader()->hide();
+    teamAResultView->setSortingEnabled(true);
 
-    QTableView *resultViewStations = new QTableView();
-    resultViewStations->setModel(csvModelStations);
-
-    csvModelStations->setColumnCount(5);
-    csvModelStations->setHorizontalHeaderLabels(QStringList() << "MAC" <<"First Seen"<<"Last Seen" <<"POWER"<< "Packets");
-
-    if ( !fileStations.open(QFile::ReadOnly | QFile::Text) )
+    for(int i=0;i<AllTeams[comboBoxTeamA->currentIndex()].get_team_size();i++)
     {
-        qDebug() << "File minon-02 does not exists ";
-    } else {
-        QString lineToSkip;
+        player teamAPlayer;
+        QList<QStandardItem *> standardItemsList;
 
-        line = in.readLine();
-        int aux=0;
-        do{
-           qDebug() << "Skipping line=" << lineToSkip <<endl;
-           lineToSkip = in.readLine();
+        AllTeams[comboBoxTeamA->currentIndex()].get_player(i,teamAPlayer);
+        standardItemsList.append(new QStandardItem(teamAPlayer.mac()));
+        standardItemsList.append(new QStandardItem(teamAPlayer.firstTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamAPlayer.lastTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamAPlayer.name()));
 
-           continue;
-        } while((lineToSkip.indexOf("Station MAC")!=0)&& (!in.atEnd()));
-        do{
-            line = in.readLine();
-            QList<QStandardItem *> standardItemsList;
-
-            foreach (QString item, line.split(","))
-            {
-                aux++;
-                qDebug() << "line split=" << aux <<endl;
-
-                standardItemsList.append(new QStandardItem(item));
-            }
-            csvModelStations->insertRow(csvModelStations->rowCount(), standardItemsList);
-        }        while (!in.atEnd());
-
+        teamAStations->insertRow(teamAStations->rowCount(), standardItemsList);
     }
 
-    layout->addWidget(queryLabelStations, 4,0,1,2);
-    layout->addWidget(resultViewStations, 5,0,1,2);
-    //toolbox->addItem(page, tr("Game"));
+    teamAResultView->resizeColumnToContents(0);
+    teamAResultView->resizeColumnToContents(1);
+    teamAResultView->resizeColumnToContents(2);
+    teamAResultView->resizeColumnToContents(3);
+    teamAResultView->sortByColumn(2, Qt::DescendingOrder);
 
-    fileStations.close();
+    layout->addWidget(teamAResultView, 5,0,1,2);
+
+    //Team B
+    QStandardItemModel *teamBStations = new QStandardItemModel();
+    QTableView *teamBResultView = new QTableView();
+    teamBResultView->setModel(teamBStations);
+    teamBResultView->setSortingEnabled(true);
+
+    teamBStations->setColumnCount(4);
+    teamBStations->setHorizontalHeaderLabels(QStringList()  << "MAC"<< "First Seen" << "Last Seen"<< "Name" );
+    teamBResultView->horizontalHeader()->setStretchLastSection(true);
+    teamBResultView->verticalHeader()->hide();
+
+    for(int i=0;i<AllTeams[comboBoxTeamB->currentIndex()].get_team_size();i++)
+    {
+        player teamBPlayer;
+        QList<QStandardItem *> standardItemsList;
+
+        AllTeams[comboBoxTeamB->currentIndex()].get_player(i,teamBPlayer);
+        standardItemsList.append(new QStandardItem(teamBPlayer.mac()));
+        standardItemsList.append(new QStandardItem(teamBPlayer.firstTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamBPlayer.lastTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamBPlayer.name()));
+
+        teamBStations->insertRow(teamBStations->rowCount(), standardItemsList);
+    }
+    teamBResultView->resizeColumnToContents(0);
+    teamBResultView->resizeColumnToContents(1);
+    teamBResultView->resizeColumnToContents(2);
+    teamBResultView->resizeColumnToContents(3);
+    teamBResultView->sortByColumn(2, Qt::DescendingOrder);
+
+    layout->addWidget(teamBResultView, 7,0,1,2);
 }

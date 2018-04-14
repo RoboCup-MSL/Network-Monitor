@@ -32,7 +32,8 @@ private:
     QComboBox *comboBoxWifiChannel;
     QComboBox *comboBoxTeamA;
     QComboBox *comboBoxTeamB;
-
+    QLabel *teamATableLabel;
+    QLabel *teamBTableLabel;
     QTimer *timer;
 
 
