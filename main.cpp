@@ -35,13 +35,14 @@ int main(int argc, char *argv[])
 
     get_team_by_file(teamA);
     get_team_by_file(teamB);
-
+    get_team_by_file(teamC);
 
     printAllPlayers();
     printAllTeams();
     qDebug("##############################################################\n");
     parseNetCapture(capFile);
     qDebug("##############################################################\n");
+    printAllTeams();
     printAllPlayers();
 
 

@@ -4,6 +4,8 @@
 #include <vector>
 using namespace std;
 
+#define TEAM_NONE "TEAM_NONE"
+
 class team
 {
     vector<player> players;

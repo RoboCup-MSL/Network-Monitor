@@ -26,6 +26,7 @@ extern vector<player>   AllPlayers;
 extern vector<team>     AllTeams;
 static player* findStation(QString sta_mac);
 static team* get_team_by_name(QString tname);
+QString team_none_name(TEAM_NONE);
 
 
 bool get_team_by_file(QString team_file){
@@ -146,7 +147,22 @@ void parseNetCapture(QString capture_file){
            if((player1 = findStation(sta_mac) ) != NULL){
                qDebug("Station is already at database with %s, %s, %s", qPrintable((player1->mac())), qPrintable((player1->name())), qPrintable(player1->team_name()));
                player1->update(first_seen, last_seen, packets, power);
-           }
+           }else
+               qDebug("New Station Detected in Capture FILE %s, will insert in database and update stats \n", qPrintable(sta_mac));
+               player *sta_new = new player(sta_mac, team_none_name);
+               sta_new->update(first_seen, last_seen, packets, power);
+               AllPlayers.push_back(*sta_new);
+               // Evaluate if Team None already exists
+               team *team_none;
+               if((team_none = get_team_by_name(team_none_name)) != NULL){
+                   qDebug("Team %s Already Exists in the system, insert player", qPrintable(team_none->name()));
+                   team_none->insertPlayer(*sta_new);
+               }else{
+                   team_none = new team(team_none_name);
+                   team_none->insertPlayer(*sta_new);
+                   AllTeams.push_back(*team_none);
+               }
+
 
 
        }

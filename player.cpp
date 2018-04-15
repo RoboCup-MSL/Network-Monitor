@@ -10,8 +10,8 @@ player::player(QString name, QString mac, QString team)
     sta_team = QString(team);
 }
 
-player::player(QString mac)
-{
+player::player(QString mac, QString team)
+{   sta_team = QString(team);
     sta_mac = QString(mac.toUpper()); // Saving MAC addresses always in the same case
 }
 

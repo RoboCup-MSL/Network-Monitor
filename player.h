@@ -20,7 +20,7 @@ public:
     //Constructors
     player();
     player(QString name, QString mac, QString team);
-    player(QString mac);
+    player(QString mac, QString team);
     //End Constructors
 
     //Acessors
