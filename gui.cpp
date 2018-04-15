@@ -64,7 +64,7 @@ gui::gui(QWidget *parent) : QWidget(parent)
     comboBoxTeamB = new QComboBox;
 
     //load existing teams
-    for(int i=0; i<AllTeams.size(); i++ )
+    for(uint i=0; i<AllTeams.size(); i++ )
     {
         comboBoxTeamA->addItem(AllTeams[i].name());
         comboBoxTeamB->addItem(AllTeams[i].name());

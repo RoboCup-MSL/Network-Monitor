@@ -12,6 +12,7 @@ HEADERS  += \
     player.h \
     team.h \
     mainwindow.h \
+    robocop_funcs.h
 
 
 SOURCES += \

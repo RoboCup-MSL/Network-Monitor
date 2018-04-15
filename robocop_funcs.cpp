@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QTextStream>
 #include <QString>
+#include <QProcess>
 #include "player.h"
 #include "team.h"
 
@@ -22,8 +23,8 @@ enum PLAYER_PROPERTIES{
 
 #define MIN_PROPERTIES 5
 
-extern vector<player>   AllPlayers;
-extern vector<team>     AllTeams;
+vector<player>   AllPlayers;
+vector<team>     AllTeams;
 static player* findStation(QString sta_mac);
 static team* get_team_by_name(QString tname);
 QString team_none_name(TEAM_NONE);
@@ -197,7 +198,19 @@ static team *get_team_by_name(QString tname){
 }
 
 
+bool start_iw_mon(QString iw){
+    QString command;
+    command = QString::asprintf("sudo airmon-ng start %s", qPrintable(iw));
 
+    return (QProcess::execute(command)==QProcess::NormalExit);
+
+}
+
+bool stop_iw_mon(QString iw){
+    QString command;
+    command = QString::asprintf("sudo airmon-ng stop %s", qPrintable(iw));
+    return (QProcess::execute(command)==QProcess::NormalExit);
+}
 
 
 
