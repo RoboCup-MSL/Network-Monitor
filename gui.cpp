@@ -17,6 +17,18 @@ int channelList[NUMBEROFWIFICHANNELS]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,34,36,38
 
 gui::gui(QWidget *parent) : QWidget(parent)
 {
+    //if there aren't teams we're here doing nothing
+    if(AllTeams.size()==0)
+    {
+        QMessageBox::warning(
+            this,
+            tr("Error!"),
+            tr("There are no teams!") );
+        return;
+    }
+    //initialize     airodump
+    airodump = new QProcess(this);
+
     //this will be the base layout
     QVBoxLayout *baseLayout;
     baseLayout = new QVBoxLayout(this);
@@ -38,6 +50,7 @@ gui::gui(QWidget *parent) : QWidget(parent)
     QPushButton *networkNameButton = new QPushButton(tr("Click to insert network BSSID:"));
     layout->addWidget(networkNameButton, 0, 0);
     layout->addWidget(networkNameLabel, 0, 1);
+
     //connect to an action when we receive the input
     connect(networkNameButton, &QAbstractButton::clicked, this, &gui::setNetworkName);
 
@@ -186,27 +199,69 @@ void gui::setNetworkName()
     bool okButton;
     bool isValidMac;
 
-
     QString text= QInputDialog::getText(this, tr("Game Network"),
                                          tr("Insert BSSID:\n(BSSID is the MAC address of the wireless access point)"), QLineEdit::Normal,
-                                         QDir::home().dirName(), &okButton);
+                                         "", &okButton);
 
     isValidMac = isValidMacAddress(text.toStdString().c_str());
 
     if (okButton && !text.isEmpty() && isValidMac)
+    {
+        networkName=new QString(text);
         networkNameLabel->setText(text);
-
+    }
     if(!isValidMac)
     {
         QMessageBox::warning(
             this,
             tr("Error!"),
             tr("Not a valid BSSID.") );
+        return;
     }
+    processAirodump();
+
 }
 
 void gui::on_comboBoxWifiChannel_currentIndexChanged()
 {
+    processAirodump();
+}
+
+void gui::processAirodump()
+{
+    qDebug("processAirodump 1");
+
+    //check if we can start airodump
+    if(networkName==NULL)
+        return;
+
+ qDebug("processAirodump 2");
+    //check the airodump state
+    if(airodump->state()!=QProcess::NotRunning)
+    {
+        qDebug("processAirodump 3");
+
+        airodump->kill();
+        if(airodump->waitForFinished(1000))
+        {
+            qDebug("Couldn't kill airodump");
+            return;
+        } qDebug("processAirodump 4");
+    }
+    qDebug("processAirodump 5");
+    QDateTime *curTime= new QDateTime(QDate::currentDate(), QTime::currentTime());
+    QString command = QString::asprintf("airodump-ng -c %d -M -d %s -w %s_%s_%s --output-format csv wlan0mon0",
+                                  channelList[comboBoxWifiChannel->currentIndex()] , qPrintable(*networkName),
+                                   qPrintable(teamATableLabel->text()), qPrintable(teamBTableLabel->text()),
+                                    qPrintable(curTime->toString("dd.MM.yyyy_hh:mm:ss")));
+    qDebug("command %s",qPrintable(command));
+
+    airodump->start(command);
+    if(airodump->waitForStarted())
+    {
+        qDebug("Couldn't start airodump");
+        return;
+    } qDebug("processAirodump 6");
 
 }
 
@@ -215,6 +270,7 @@ void gui::on_comboBoxTeamA_currentIndexChanged()
     delete teamATableLabel;
     teamATableLabel = new QLabel(AllTeams[comboBoxTeamA->currentIndex()].name());
     layout->addWidget(teamATableLabel, 4,0,1,2);
+    processAirodump();
 }
 
 void gui::on_comboBoxTeamB_currentIndexChanged()
@@ -222,6 +278,7 @@ void gui::on_comboBoxTeamB_currentIndexChanged()
     delete teamBTableLabel;
     teamBTableLabel = new QLabel(AllTeams[comboBoxTeamB->currentIndex()].name());
     layout->addWidget(teamBTableLabel, 6,0,1,2);
+    processAirodump();
 }
 
 void gui::display()

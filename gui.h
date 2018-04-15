@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QBoxLayout>
 #include <QToolBox>
+#include <QProcess>
 
 #define NUMBEROFWIFICHANNELS 41
 class QLabel;
@@ -26,6 +27,8 @@ public slots:
 private slots:
 
 private:
+    void processAirodump();
+    QString *networkName;
     QToolBox *toolbox;
     QLabel *networkNameLabel;
     QWidget *page;
@@ -35,10 +38,8 @@ private:
     QLabel *teamATableLabel;
     QLabel *teamBTableLabel;
     QTimer *timer;
-
-
     QGridLayout *layout;
-    QLabel *queryLabelStations;
+    QProcess *airodump;
 };
 
 #endif // GUI_H
