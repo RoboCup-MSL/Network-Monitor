@@ -40,6 +40,7 @@ private:
     QTimer *timer;
     QGridLayout *layout;
     QProcess *airodump;
+    QString *cap_file_name = NULL;
 };
 
 #endif // GUI_H

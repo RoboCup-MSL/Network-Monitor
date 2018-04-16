@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     QString teamB("./equipa2.txt");
     QString teamA("./equipa1.txt");
     QString teamC("./equipa3.txt");
-    QString capFile("./lab-03.csv");
+    //QString capFile("./lab-03.csv");
     QString iw_name("wlp7s0");
     QString mon_name("mon0");
     stop_iw_mon(mon_name);
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     printAllPlayers();
     printAllTeams();
     qDebug("##############################################################\n");
-    parseNetCapture(capFile);
+    //parseNetCapture(capFile);
     qDebug("##############################################################\n");
     printAllTeams();
     printAllPlayers();

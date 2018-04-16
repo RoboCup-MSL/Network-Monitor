@@ -10,7 +10,7 @@
 #include <QtWidgets>
 #include "gui.h"
 #include "team.h"
-
+#include "robocop_funcs.h"
 extern vector<team>     AllTeams;
 
 int channelList[NUMBEROFWIFICHANNELS]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,34,36,38,40,42,44,46,48,52,56,60,64,100,104,108,112,116,120,124,128,132,136,140,149,153,157,161};
@@ -110,14 +110,14 @@ gui::gui(QWidget *parent) : QWidget(parent)
 
     for(int i=0;i<AllTeams[comboBoxTeamA->currentIndex()].get_team_size();i++)
     {
-        player teamAPlayer;
+        player *teamAPlayer;
         QList<QStandardItem *> standardItemsList;
 
-        AllTeams[comboBoxTeamA->currentIndex()].get_player(i,teamAPlayer);
-        standardItemsList.append(new QStandardItem(teamAPlayer.mac()));
-        standardItemsList.append(new QStandardItem(teamAPlayer.firstTimeSeen().toString()));
-        standardItemsList.append(new QStandardItem(teamAPlayer.lastTimeSeen().toString()));
-        standardItemsList.append(new QStandardItem(teamAPlayer.name()));
+        AllTeams[comboBoxTeamA->currentIndex()].get_player(i,&teamAPlayer);
+        standardItemsList.append(new QStandardItem(teamAPlayer->mac()));
+        standardItemsList.append(new QStandardItem(teamAPlayer->firstTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamAPlayer->lastTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamAPlayer->name()));
         //standardItemsList.setStyleSheet("QListView { background-color: #80FF80 }");
         teamAStations->insertRow(teamAStations->rowCount(), standardItemsList);
 
@@ -145,14 +145,14 @@ gui::gui(QWidget *parent) : QWidget(parent)
 
     for(int i=0;i<AllTeams[comboBoxTeamB->currentIndex()].get_team_size();i++)
     {
-        player teamBPlayer;
+        player *teamBPlayer;
         QList<QStandardItem *> standardItemsList;
 
-        AllTeams[comboBoxTeamB->currentIndex()].get_player(i,teamBPlayer);
-        standardItemsList.append(new QStandardItem(teamBPlayer.mac()));
-        standardItemsList.append(new QStandardItem(teamBPlayer.firstTimeSeen().toString()));
-        standardItemsList.append(new QStandardItem(teamBPlayer.lastTimeSeen().toString()));
-        standardItemsList.append(new QStandardItem(teamBPlayer.name()));
+        AllTeams[comboBoxTeamB->currentIndex()].get_player(i,&teamBPlayer);
+        standardItemsList.append(new QStandardItem(teamBPlayer->mac()));
+        standardItemsList.append(new QStandardItem(teamBPlayer->firstTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamBPlayer->lastTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamBPlayer->name()));
 
         teamBStations->insertRow(teamBStations->rowCount(), standardItemsList);
     }
@@ -242,7 +242,7 @@ void gui::processAirodump()
         qDebug("processAirodump 3");
 
         airodump->kill();
-        if(airodump->waitForFinished(1000))
+        if(airodump->waitForFinished(1000)!=true)
         {
             qDebug("Couldn't kill airodump");
             return;
@@ -250,14 +250,18 @@ void gui::processAirodump()
     }
     qDebug("processAirodump 5");
     QDateTime *curTime= new QDateTime(QDate::currentDate(), QTime::currentTime());
-    QString command = QString::asprintf("airodump-ng -c %d -M -d %s -w %s_%s_%s --output-format csv wlan0mon0",
+    QString command = QString::asprintf("airodump-ng -c %d -M -d %s -w %s_%s_%s --output-format csv mon0",
                                   channelList[comboBoxWifiChannel->currentIndex()] , qPrintable(*networkName),
-                                   qPrintable(teamATableLabel->text()), qPrintable(teamBTableLabel->text()),
+                                   qPrintable(teamATableLabel->text().remove(" ")), qPrintable(teamBTableLabel->text().remove(" ")),
                                     qPrintable(curTime->toString("dd.MM.yyyy_hh:mm:ss")));
     qDebug("command %s",qPrintable(command));
-
+    if(cap_file_name!=NULL){
+        delete cap_file_name;
+    }
+    cap_file_name = new QString(QString::asprintf("%s_%s_%s-01.csv", qPrintable(teamATableLabel->text().remove(" ")), qPrintable(teamBTableLabel->text().remove(" ")),
+                                      qPrintable(curTime->toString("dd.MM.yyyy_hh:mm:ss"))));
     airodump->start(command);
-    if(airodump->waitForStarted())
+    if(airodump->waitForStarted()!=true)
     {
         qDebug("Couldn't start airodump");
         return;
@@ -283,6 +287,10 @@ void gui::on_comboBoxTeamB_currentIndexChanged()
 
 void gui::display()
 {
+    if(cap_file_name!=NULL){
+        parseNetCapture(*cap_file_name);
+    }
+
     //Team A
     QStandardItemModel *teamAStations = new QStandardItemModel();
     QTableView *teamAResultView = new QTableView();
@@ -298,14 +306,14 @@ void gui::display()
 
     for(int i=0;i<AllTeams[comboBoxTeamA->currentIndex()].get_team_size();i++)
     {
-        player teamAPlayer;
+        player *teamAPlayer;
         QList<QStandardItem *> standardItemsList;
 
-        AllTeams[comboBoxTeamA->currentIndex()].get_player(i,teamAPlayer);
-        standardItemsList.append(new QStandardItem(teamAPlayer.mac()));
-        standardItemsList.append(new QStandardItem(teamAPlayer.firstTimeSeen().toString()));
-        standardItemsList.append(new QStandardItem(teamAPlayer.lastTimeSeen().toString()));
-        standardItemsList.append(new QStandardItem(teamAPlayer.name()));
+        AllTeams[comboBoxTeamA->currentIndex()].get_player(i,&teamAPlayer);
+        standardItemsList.append(new QStandardItem(teamAPlayer->mac()));
+        standardItemsList.append(new QStandardItem(teamAPlayer->firstTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamAPlayer->lastTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamAPlayer->name()));
 
         teamAStations->insertRow(teamAStations->rowCount(), standardItemsList);
     }
@@ -331,14 +339,14 @@ void gui::display()
 
     for(int i=0;i<AllTeams[comboBoxTeamB->currentIndex()].get_team_size();i++)
     {
-        player teamBPlayer;
+        player *teamBPlayer;
         QList<QStandardItem *> standardItemsList;
 
-        AllTeams[comboBoxTeamB->currentIndex()].get_player(i,teamBPlayer);
-        standardItemsList.append(new QStandardItem(teamBPlayer.mac()));
-        standardItemsList.append(new QStandardItem(teamBPlayer.firstTimeSeen().toString()));
-        standardItemsList.append(new QStandardItem(teamBPlayer.lastTimeSeen().toString()));
-        standardItemsList.append(new QStandardItem(teamBPlayer.name()));
+        AllTeams[comboBoxTeamB->currentIndex()].get_player(i, &teamBPlayer);
+        standardItemsList.append(new QStandardItem(teamBPlayer->mac()));
+        standardItemsList.append(new QStandardItem(teamBPlayer->firstTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamBPlayer->lastTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamBPlayer->name()));
 
         teamBStations->insertRow(teamBStations->rowCount(), standardItemsList);
     }
