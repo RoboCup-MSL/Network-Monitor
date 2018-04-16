@@ -28,7 +28,7 @@ private slots:
 
 private:
     void processAirodump();
-    QString *networkName;
+    QString *networkName=NULL;
     QToolBox *toolbox;
     QLabel *networkNameLabel;
     QWidget *page;
