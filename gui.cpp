@@ -229,32 +229,25 @@ void gui::on_comboBoxWifiChannel_currentIndexChanged()
 
 void gui::processAirodump()
 {
-    qDebug("processAirodump 1");
-
     //check if we can start airodump
     if(networkName==NULL)
         return;
 
- qDebug("processAirodump 2");
     //check the airodump state
     if(airodump->state()!=QProcess::NotRunning)
     {
-        qDebug("processAirodump 3");
-
         airodump->kill();
         if(airodump->waitForFinished(1000)!=true)
         {
             qDebug("Couldn't kill airodump");
             return;
-        } qDebug("processAirodump 4");
+        }
     }
-    qDebug("processAirodump 5");
     QDateTime *curTime= new QDateTime(QDate::currentDate(), QTime::currentTime());
-    QString command = QString::asprintf("airodump-ng -c %d -M -d %s -w %s_%s_%s --output-format csv mon0",
+    QString command = QString::asprintf("sudo airodump-ng -c %d -M -d %s -w %s_%s_%s --output-format csv mon0",
                                   channelList[comboBoxWifiChannel->currentIndex()] , qPrintable(*networkName),
                                    qPrintable(teamATableLabel->text().remove(" ")), qPrintable(teamBTableLabel->text().remove(" ")),
                                     qPrintable(curTime->toString("dd.MM.yyyy_hh:mm:ss")));
-    qDebug("command %s",qPrintable(command));
     if(cap_file_name!=NULL){
         delete cap_file_name;
     }
@@ -265,7 +258,7 @@ void gui::processAirodump()
     {
         qDebug("Couldn't start airodump");
         return;
-    } qDebug("processAirodump 6");
+    }
 
 }
 
