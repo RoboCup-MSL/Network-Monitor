@@ -5,7 +5,7 @@
 #include <QProcess>
 #include "player.h"
 #include "team.h"
-
+#include <QDirIterator>
 
 enum STATION_PROPERTIES
 {
@@ -30,6 +30,7 @@ static team* get_team_by_name(QString tname);
 QString team_none_name(TEAM_NONE);
 
 
+
 bool get_team_by_file(QString team_file){
 
     QFile team_descriptor(team_file);
@@ -42,9 +43,18 @@ bool get_team_by_file(QString team_file){
     }
 
     while(!tstream.atEnd()){
+
         QString line = tstream.readLine();
+
+        if(line==NULL)
+        {
+            qDebug() << "line is NULL so skip" << endl;
+            continue;
+        }
+
         if(line.at(0)=='#')
             continue;
+
         if(line.startsWith("Team Name:") == true){
             QStringList tname = line.split("Team Name:", QString::SkipEmptyParts);
             qDebug() << "Found Team Name: " <<  qPrintable((tname.at(0)).trimmed()) << endl;
@@ -53,10 +63,17 @@ bool get_team_by_file(QString team_file){
                 return false;
             }
             team1 = new team(tname.at(0));
+
             while(!tstream.atEnd()){
                 QString line2 = tstream.readLine();
+                if(line==NULL)
+                {
+                    qDebug() << "line is NULL so skip" << endl;
+                    continue;
+                }
                 if(line2.at(0)=='#')
                     continue;
+
                 QStringList tplayer = line2.split(",", QString::SkipEmptyParts);
                 if(tplayer.size() < 2){
                     qDebug() << "Invalid Player: " << qPrintable(line2) << endl;
@@ -81,9 +98,18 @@ bool get_team_by_file(QString team_file){
             }
         }
     }
+
     AllTeams.push_back(*team1);
     delete team1;
     return true;
+}
+
+void get_all_teams(void)
+{
+    QDirIterator teamDir("./team", QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::NoIteratorFlags);
+    while (teamDir.hasNext()) {
+        get_team_by_file(teamDir.next());
+    }
 }
 
 void printAllPlayers(void){
@@ -158,22 +184,20 @@ void parseNetCapture(QString capture_file){
                AllPlayers.push_back(sta_new);
                // Evaluate if Team None already exists
                team *team_none;
-                        if((team_none = get_team_by_name(team_none_name)) != NULL){
+                if((team_none = get_team_by_name(team_none_name)) != NULL)
+                {
                    qDebug("Team %s Already Exists in the system, insert player", qPrintable(team_none->name()));
                    team_none->insertPlayer(sta_new);
-                 }else{
+                }
+                else
+                {
                    team_none = new team(team_none_name);
                    team_none->insertPlayer(sta_new);
                    AllTeams.push_back(*team_none);
                    delete team_none;
-                 }
-
+                }
            }
-
-
-
        }
-
     }
 }
 

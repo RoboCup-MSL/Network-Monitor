@@ -6,6 +6,8 @@
 
 bool get_team_by_file(QString team_file);
 
+void get_all_teams(void);
+
 void printAllPlayers(void);
 
 void printAllTeams(void);
