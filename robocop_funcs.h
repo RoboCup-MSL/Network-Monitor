@@ -14,12 +14,16 @@ void printAllTeams(void);
 
 void parseNetCapture(QString capture_file);
 
+team *get_team_by_name(QString tname);
+
+void print_team(team *a_team);
+
 bool start_iw_mon(QString iw);
 
 bool stop_iw_mon(QString iw);
 
-extern vector<player>   AllPlayers;
+extern vector<player *>   AllPlayers;
 extern vector<team>     AllTeams;
-
+extern QString      team_none_name;
 
 #endif // ROBOCOP_FUNCS_H

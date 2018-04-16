@@ -6,6 +6,7 @@
 #include "player.h"
 #include "team.h"
 #include <QDirIterator>
+#include "robocop_funcs.h"
 
 enum STATION_PROPERTIES
 {
@@ -26,7 +27,6 @@ enum PLAYER_PROPERTIES{
 vector<player *>   AllPlayers;
 vector<team>     AllTeams;
 static player* findStation(QString sta_mac);
-static team* get_team_by_name(QString tname);
 QString team_none_name(TEAM_NONE);
 
 
@@ -201,8 +201,6 @@ void parseNetCapture(QString capture_file){
     }
 }
 
-
-
 static player* findStation(QString sta_mac){
 
     for(unsigned int i = 0; i < AllPlayers.size(); i++){
@@ -215,7 +213,7 @@ static player* findStation(QString sta_mac){
 
 }
 
-static team *get_team_by_name(QString tname){
+team* get_team_by_name(QString tname){
 
     for(unsigned int i = 0; i < AllTeams.size(); i++){
         if(tname.trimmed() == AllTeams[i].name())
@@ -223,9 +221,23 @@ static team *get_team_by_name(QString tname){
     }
 
     return NULL;
+}
 
+void print_team(team *a_team){
+    if(a_team!=NULL){
+
+    for(int i = 0; i<a_team->get_team_size(); i++){
+
+        player *playerx;
+        a_team->get_player(i, &playerx);
+        qDebug("Player %3d, Name %20s, MAC %20s, Team %10s\n", i, qPrintable(playerx->name()), qPrintable(playerx->mac()), qPrintable(playerx->team_name()));
+
+    }
+
+   }
 
 }
+
 
 
 bool start_iw_mon(QString iw){
