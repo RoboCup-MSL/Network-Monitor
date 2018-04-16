@@ -37,6 +37,7 @@ private:
     QComboBox *comboBoxTeamB;
     QLabel *teamATableLabel;
     QLabel *teamBTableLabel;
+    QLabel *teamNoneTableLabel;
     QTimer *timer;
     QGridLayout *layout;
     QProcess *airodump;

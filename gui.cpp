@@ -105,9 +105,8 @@ gui::gui(QWidget *parent) : QWidget(parent)
     teamAResultView->setWordWrap(true);
     teamAResultView->verticalHeader()->hide();
     teamAResultView->setSortingEnabled(true);
-    teamAStations->setColumnCount(4);
-    teamAStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name");
-
+    teamAStations->setColumnCount(6);
+    teamAStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Packets" << "Power" );
     for(int i=0;i<AllTeams[comboBoxTeamA->currentIndex()].get_team_size();i++)
     {
         player *teamAPlayer;
@@ -118,6 +117,8 @@ gui::gui(QWidget *parent) : QWidget(parent)
         standardItemsList.append(new QStandardItem(teamAPlayer->firstTimeSeen().toString()));
         standardItemsList.append(new QStandardItem(teamAPlayer->lastTimeSeen().toString()));
         standardItemsList.append(new QStandardItem(teamAPlayer->name()));
+        standardItemsList.append(new QStandardItem(teamAPlayer->packets()));
+        standardItemsList.append(new QStandardItem(teamAPlayer->power()));
         //standardItemsList.setStyleSheet("QListView { background-color: #80FF80 }");
         teamAStations->insertRow(teamAStations->rowCount(), standardItemsList);
 
@@ -126,6 +127,8 @@ gui::gui(QWidget *parent) : QWidget(parent)
     teamAResultView->resizeColumnToContents(1);
     teamAResultView->resizeColumnToContents(2);
     teamAResultView->resizeColumnToContents(3);
+    teamAResultView->resizeColumnToContents(4);
+    teamAResultView->resizeColumnToContents(5);
     teamAResultView->sortByColumn(2, Qt::DescendingOrder);
 
     layout->addWidget(teamATableLabel, 4,0,1,2);
@@ -139,8 +142,8 @@ gui::gui(QWidget *parent) : QWidget(parent)
     teamBResultView->horizontalHeader()->setStretchLastSection(true);
     teamBResultView->setSortingEnabled(true);
 
-    teamBStations->setColumnCount(4);
-    teamBStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  );
+    teamBStations->setColumnCount(6);
+    teamBStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Packets" << "Power" );
     teamBResultView->verticalHeader()->hide();
 
     for(int i=0;i<AllTeams[comboBoxTeamB->currentIndex()].get_team_size();i++)
@@ -153,17 +156,42 @@ gui::gui(QWidget *parent) : QWidget(parent)
         standardItemsList.append(new QStandardItem(teamBPlayer->firstTimeSeen().toString()));
         standardItemsList.append(new QStandardItem(teamBPlayer->lastTimeSeen().toString()));
         standardItemsList.append(new QStandardItem(teamBPlayer->name()));
-
+        standardItemsList.append(new QStandardItem(teamBPlayer->packets()));
+        standardItemsList.append(new QStandardItem(teamBPlayer->power()));
         teamBStations->insertRow(teamBStations->rowCount(), standardItemsList);
     }
     teamBResultView->resizeColumnToContents(0);
     teamBResultView->resizeColumnToContents(1);
     teamBResultView->resizeColumnToContents(2);
     teamBResultView->resizeColumnToContents(3);
+    teamBResultView->resizeColumnToContents(4);
+    teamBResultView->resizeColumnToContents(5);
     teamBResultView->sortByColumn(2, Qt::DescendingOrder);
 
     layout->addWidget(teamBTableLabel, 6,0,1,2);
     layout->addWidget(teamBResultView, 7,0,1,2);
+
+    //None
+    teamNoneTableLabel = new QLabel("Unknown stations");
+
+    QStandardItemModel *teamNoneStations = new QStandardItemModel();
+    QTableView *teamNoneResultView = new QTableView();
+    teamNoneResultView->setModel(teamNoneStations);
+    teamNoneResultView->horizontalHeader()->setStretchLastSection(true);
+    teamNoneResultView->setSortingEnabled(true);
+
+    teamNoneStations->setColumnCount(6);
+        teamNoneStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Packets" << "Power" );
+        teamNoneResultView->resizeColumnToContents(0);
+    teamNoneResultView->resizeColumnToContents(1);
+    teamNoneResultView->resizeColumnToContents(2);
+    teamNoneResultView->resizeColumnToContents(3);
+    teamNoneResultView->resizeColumnToContents(4);
+    teamNoneResultView->resizeColumnToContents(5);
+    teamNoneResultView->sortByColumn(2, Qt::DescendingOrder);
+
+    layout->addWidget(teamNoneTableLabel, 8,0,1,2);
+    layout->addWidget(teamNoneResultView, 9,0,1,2);
 
     toolbox->addItem(page, tr("Game"));
 
@@ -290,8 +318,8 @@ void gui::display()
     teamAResultView->setModel(teamAStations);
     teamAResultView->setWordWrap(1);
 
-    teamAStations->setColumnCount(4);
-    teamAStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name");
+    teamAStations->setColumnCount(6);
+    teamAStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Packets" << "Power" );
     teamAResultView->horizontalHeader()->setStretchLastSection(true);
     teamAResultView->setWordWrap(true);
     teamAResultView->verticalHeader()->hide();
@@ -307,7 +335,8 @@ void gui::display()
         standardItemsList.append(new QStandardItem(teamAPlayer->firstTimeSeen().toString()));
         standardItemsList.append(new QStandardItem(teamAPlayer->lastTimeSeen().toString()));
         standardItemsList.append(new QStandardItem(teamAPlayer->name()));
-
+        standardItemsList.append(new QStandardItem(teamAPlayer->packets()));
+        standardItemsList.append(new QStandardItem(teamAPlayer->power()));
         teamAStations->insertRow(teamAStations->rowCount(), standardItemsList);
     }
 
@@ -315,6 +344,8 @@ void gui::display()
     teamAResultView->resizeColumnToContents(1);
     teamAResultView->resizeColumnToContents(2);
     teamAResultView->resizeColumnToContents(3);
+    teamAResultView->resizeColumnToContents(4);
+    teamAResultView->resizeColumnToContents(5);
     teamAResultView->sortByColumn(2, Qt::DescendingOrder);
 
     layout->addWidget(teamAResultView, 5,0,1,2);
@@ -325,8 +356,8 @@ void gui::display()
     teamBResultView->setModel(teamBStations);
     teamBResultView->setSortingEnabled(true);
 
-    teamBStations->setColumnCount(4);
-    teamBStations->setHorizontalHeaderLabels(QStringList()  << "MAC"<< "First Seen" << "Last Seen"<< "Name" );
+    teamBStations->setColumnCount(6);
+    teamBStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Packets" << "Power" );
     teamBResultView->horizontalHeader()->setStretchLastSection(true);
     teamBResultView->verticalHeader()->hide();
 
@@ -340,14 +371,59 @@ void gui::display()
         standardItemsList.append(new QStandardItem(teamBPlayer->firstTimeSeen().toString()));
         standardItemsList.append(new QStandardItem(teamBPlayer->lastTimeSeen().toString()));
         standardItemsList.append(new QStandardItem(teamBPlayer->name()));
-
+        standardItemsList.append(new QStandardItem(teamBPlayer->packets()));
+        standardItemsList.append(new QStandardItem(teamBPlayer->power()));
         teamBStations->insertRow(teamBStations->rowCount(), standardItemsList);
     }
     teamBResultView->resizeColumnToContents(0);
     teamBResultView->resizeColumnToContents(1);
     teamBResultView->resizeColumnToContents(2);
     teamBResultView->resizeColumnToContents(3);
+    teamBResultView->resizeColumnToContents(4);
+    teamBResultView->resizeColumnToContents(5);
     teamBResultView->sortByColumn(2, Qt::DescendingOrder);
 
     layout->addWidget(teamBResultView, 7,0,1,2);
+    team* teamNone;
+    if((teamNone=get_team_by_name(team_none_name))!=NULL)
+    {
+        QStandardItemModel *teamNoneStations = new QStandardItemModel();
+        QTableView *teamNoneResultView = new QTableView();
+        teamNoneResultView->setModel(teamNoneStations);
+        teamNoneResultView->horizontalHeader()->setStretchLastSection(true);
+        teamNoneResultView->setSortingEnabled(true);
+
+        teamNoneStations->setColumnCount(6);
+        teamNoneStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Packets" << "Power" );
+        teamNoneResultView->verticalHeader()->hide();
+
+
+        for(int i=0;i<teamNone->get_team_size();i++)
+        {
+            player *teamNonePlayer;
+            QList<QStandardItem *> standardItemsList;
+
+            teamNone->get_player(i,&teamNonePlayer);
+            standardItemsList.append(new QStandardItem(teamNonePlayer->mac()));
+            standardItemsList.append(new QStandardItem(teamNonePlayer->firstTimeSeen().toString()));
+            standardItemsList.append(new QStandardItem(teamNonePlayer->lastTimeSeen().toString()));
+            standardItemsList.append(new QStandardItem(teamNonePlayer->name()));
+            standardItemsList.append(new QStandardItem(teamNonePlayer->packets()));
+            standardItemsList.append(new QStandardItem(teamNonePlayer->power()));
+
+
+            teamNoneStations->insertRow(teamNoneStations->rowCount(), standardItemsList);
+        }
+        teamNoneResultView->resizeColumnToContents(0);
+        teamNoneResultView->resizeColumnToContents(1);
+        teamNoneResultView->resizeColumnToContents(2);
+        teamNoneResultView->resizeColumnToContents(3);
+        teamNoneResultView->resizeColumnToContents(4);
+        teamNoneResultView->resizeColumnToContents(5);
+
+        teamNoneResultView->sortByColumn(2, Qt::DescendingOrder);
+        layout->addWidget(teamNoneResultView, 9,0,1,2);
+        delete teamNone;
+
+    }
 }
