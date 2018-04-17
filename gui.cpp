@@ -114,11 +114,11 @@ gui::gui(QWidget *parent) : QWidget(parent)
 
         AllTeams[comboBoxTeamA->currentIndex()].get_player(i,&teamAPlayer);
         standardItemsList.append(new QStandardItem(teamAPlayer->mac()));
-        standardItemsList.append(new QStandardItem(teamAPlayer->firstTimeSeen().toString()));
-        standardItemsList.append(new QStandardItem(teamAPlayer->lastTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamAPlayer->firstTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
+        standardItemsList.append(new QStandardItem(teamAPlayer->lastTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
         standardItemsList.append(new QStandardItem(teamAPlayer->name()));
-        standardItemsList.append(new QStandardItem(teamAPlayer->packets()));
-        standardItemsList.append(new QStandardItem(teamAPlayer->power()));
+        standardItemsList.append(new QStandardItem(QString::number(teamAPlayer->packets())));
+        standardItemsList.append(new QStandardItem(QString::number(teamAPlayer->power())));
         //standardItemsList.setStyleSheet("QListView { background-color: #80FF80 }");
         teamAStations->insertRow(teamAStations->rowCount(), standardItemsList);
 
@@ -153,11 +153,11 @@ gui::gui(QWidget *parent) : QWidget(parent)
 
         AllTeams[comboBoxTeamB->currentIndex()].get_player(i,&teamBPlayer);
         standardItemsList.append(new QStandardItem(teamBPlayer->mac()));
-        standardItemsList.append(new QStandardItem(teamBPlayer->firstTimeSeen().toString()));
-        standardItemsList.append(new QStandardItem(teamBPlayer->lastTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamBPlayer->firstTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
+        standardItemsList.append(new QStandardItem(teamBPlayer->lastTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
         standardItemsList.append(new QStandardItem(teamBPlayer->name()));
-        standardItemsList.append(new QStandardItem(teamBPlayer->packets()));
-        standardItemsList.append(new QStandardItem(teamBPlayer->power()));
+        standardItemsList.append(new QStandardItem(QString::number(teamBPlayer->packets())));
+        standardItemsList.append(new QStandardItem(QString::number(teamBPlayer->power())));
         teamBStations->insertRow(teamBStations->rowCount(), standardItemsList);
     }
     teamBResultView->resizeColumnToContents(0);
@@ -312,6 +312,10 @@ void gui::display()
         parseNetCapture(*cap_file_name);
     }
 
+    team *other;
+    other = get_team_by_name(team_none_name);
+    print_team(other);
+
     //Team A
     QStandardItemModel *teamAStations = new QStandardItemModel();
     QTableView *teamAResultView = new QTableView();
@@ -332,11 +336,11 @@ void gui::display()
 
         AllTeams[comboBoxTeamA->currentIndex()].get_player(i,&teamAPlayer);
         standardItemsList.append(new QStandardItem(teamAPlayer->mac()));
-        standardItemsList.append(new QStandardItem(teamAPlayer->firstTimeSeen().toString()));
-        standardItemsList.append(new QStandardItem(teamAPlayer->lastTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamAPlayer->firstTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
+        standardItemsList.append(new QStandardItem(teamAPlayer->lastTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
         standardItemsList.append(new QStandardItem(teamAPlayer->name()));
-        standardItemsList.append(new QStandardItem(teamAPlayer->packets()));
-        standardItemsList.append(new QStandardItem(teamAPlayer->power()));
+        standardItemsList.append(new QStandardItem(QString::number(teamAPlayer->packets())));
+        standardItemsList.append(new QStandardItem(QString::number(teamAPlayer->power())));
         teamAStations->insertRow(teamAStations->rowCount(), standardItemsList);
     }
 
@@ -368,11 +372,11 @@ void gui::display()
 
         AllTeams[comboBoxTeamB->currentIndex()].get_player(i, &teamBPlayer);
         standardItemsList.append(new QStandardItem(teamBPlayer->mac()));
-        standardItemsList.append(new QStandardItem(teamBPlayer->firstTimeSeen().toString()));
-        standardItemsList.append(new QStandardItem(teamBPlayer->lastTimeSeen().toString()));
+        standardItemsList.append(new QStandardItem(teamBPlayer->firstTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
+        standardItemsList.append(new QStandardItem(teamBPlayer->lastTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
         standardItemsList.append(new QStandardItem(teamBPlayer->name()));
-        standardItemsList.append(new QStandardItem(teamBPlayer->packets()));
-        standardItemsList.append(new QStandardItem(teamBPlayer->power()));
+        standardItemsList.append(new QStandardItem(QString::number(teamBPlayer->packets())));
+        standardItemsList.append(new QStandardItem(QString::number(teamBPlayer->power())));
         teamBStations->insertRow(teamBStations->rowCount(), standardItemsList);
     }
     teamBResultView->resizeColumnToContents(0);
@@ -405,11 +409,11 @@ void gui::display()
 
             teamNone->get_player(i,&teamNonePlayer);
             standardItemsList.append(new QStandardItem(teamNonePlayer->mac()));
-            standardItemsList.append(new QStandardItem(teamNonePlayer->firstTimeSeen().toString()));
-            standardItemsList.append(new QStandardItem(teamNonePlayer->lastTimeSeen().toString()));
+            standardItemsList.append(new QStandardItem(teamNonePlayer->firstTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
+            standardItemsList.append(new QStandardItem(teamNonePlayer->lastTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
             standardItemsList.append(new QStandardItem(teamNonePlayer->name()));
-            standardItemsList.append(new QStandardItem(teamNonePlayer->packets()));
-            standardItemsList.append(new QStandardItem(teamNonePlayer->power()));
+            standardItemsList.append(new QStandardItem(QString::number(teamNonePlayer->packets())));
+            standardItemsList.append(new QStandardItem(QString::number(teamNonePlayer->power())));
 
 
             teamNoneStations->insertRow(teamNoneStations->rowCount(), standardItemsList);
@@ -422,8 +426,6 @@ void gui::display()
         teamNoneResultView->resizeColumnToContents(5);
 
         teamNoneResultView->sortByColumn(2, Qt::DescendingOrder);
-        layout->addWidget(teamNoneResultView, 9,0,1,2);
-        delete teamNone;
-
+        layout->addWidget(teamNoneResultView, 9,0,1,2);       
     }
 }

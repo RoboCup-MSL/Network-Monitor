@@ -16,9 +16,9 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QString teamB("./equipa2.txt");
-    QString teamA("./equipa1.txt");
-    QString teamC("./equipa3.txt");
+    //QString teamB("./equipa2.txt");
+    //QString teamA("./equipa1.txt");
+    //QString teamC("./equipa3.txt");
     //QString capFile("./lab-03.csv");
     QString iw_name("wlp7s0");
     QString mon_name("mon0");
@@ -27,9 +27,7 @@ int main(int argc, char *argv[])
 
     //get_team_by_file(teamA);
 
-    get_team_by_file(teamA);
-    get_team_by_file(teamB);
-    get_team_by_file(teamC);
+    get_all_teams();
 
     printAllPlayers();
     printAllTeams();
