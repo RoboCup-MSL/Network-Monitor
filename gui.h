@@ -48,7 +48,6 @@ private:
     QGridLayout *gameLayout;
     QProcess *airodump;
     QString *cap_file_name = NULL;
-    QLabel *teamTableLabel[3];
     QTableView *teamResultView[3];
 };
 
