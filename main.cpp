@@ -50,5 +50,5 @@ int main(int argc, char *argv[])
     qDebug() << "end"<<endl;
 
     return a.exec();
-    //return 0;
+    return 0;
 }

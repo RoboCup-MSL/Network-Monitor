@@ -22,6 +22,8 @@ bool start_iw_mon(QString iw);
 
 bool stop_iw_mon(QString iw);
 
+void clean_AllPlayers_stat(void);
+
 extern vector<player *>   AllPlayers;
 extern vector<team>     AllTeams;
 extern QString      team_none_name;

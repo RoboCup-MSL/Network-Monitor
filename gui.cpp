@@ -98,7 +98,7 @@ gui::gui(QWidget *parent) : QWidget(parent)
     //Team A
     teamATableLabel = new QLabel(AllTeams[comboBoxTeamA->currentIndex()].name());
     QStandardItemModel *teamAStations = new QStandardItemModel();
-    QTableView *teamAResultView = new QTableView();
+    teamAResultView = new QTableView();
     teamAResultView->setModel(teamAStations);
     teamAResultView->horizontalHeader()->setStretchLastSection(true);
 
@@ -137,7 +137,7 @@ gui::gui(QWidget *parent) : QWidget(parent)
     //Team B
     teamBTableLabel = new QLabel(AllTeams[comboBoxTeamB->currentIndex()].name());
     QStandardItemModel *teamBStations = new QStandardItemModel();
-    QTableView *teamBResultView = new QTableView();
+    teamBResultView = new QTableView();
     teamBResultView->setModel(teamBStations);
     teamBResultView->horizontalHeader()->setStretchLastSection(true);
     teamBResultView->setSortingEnabled(true);
@@ -175,7 +175,7 @@ gui::gui(QWidget *parent) : QWidget(parent)
     teamNoneTableLabel = new QLabel("Unknown stations");
 
     QStandardItemModel *teamNoneStations = new QStandardItemModel();
-    QTableView *teamNoneResultView = new QTableView();
+    teamNoneResultView = new QTableView();
     teamNoneResultView->setModel(teamNoneStations);
     teamNoneResultView->horizontalHeader()->setStretchLastSection(true);
     teamNoneResultView->setSortingEnabled(true);
@@ -197,7 +197,7 @@ gui::gui(QWidget *parent) : QWidget(parent)
 
     //refresh every second
     timer = new QTimer(this);
-    timer->setInterval(750);
+    timer->setInterval(250);
     timer->start(1000);
     connect(timer, &QTimer::timeout, this, &gui::display);
 }
@@ -258,8 +258,11 @@ void gui::on_comboBoxWifiChannel_currentIndexChanged()
 void gui::processAirodump()
 {
     //check if we can start airodump
+
     if(networkName==NULL)
         return;
+
+    clean_AllPlayers_stat();
 
     //check the airodump state
     if(airodump->state()!=QProcess::NotRunning)
@@ -318,7 +321,8 @@ void gui::display()
 
     //Team A
     QStandardItemModel *teamAStations = new QStandardItemModel();
-    QTableView *teamAResultView = new QTableView();
+    delete teamAResultView;
+    teamAResultView = new QTableView();
     teamAResultView->setModel(teamAStations);
     teamAResultView->setWordWrap(1);
 
@@ -356,7 +360,8 @@ void gui::display()
 
     //Team B
     QStandardItemModel *teamBStations = new QStandardItemModel();
-    QTableView *teamBResultView = new QTableView();
+    delete teamBResultView;
+    teamBResultView = new QTableView();
     teamBResultView->setModel(teamBStations);
     teamBResultView->setSortingEnabled(true);
 
@@ -392,7 +397,8 @@ void gui::display()
     if((teamNone=get_team_by_name(team_none_name))!=NULL)
     {
         QStandardItemModel *teamNoneStations = new QStandardItemModel();
-        QTableView *teamNoneResultView = new QTableView();
+        delete teamNoneResultView;
+        teamNoneResultView = new QTableView();
         teamNoneResultView->setModel(teamNoneStations);
         teamNoneResultView->horizontalHeader()->setStretchLastSection(true);
         teamNoneResultView->setSortingEnabled(true);
@@ -426,6 +432,6 @@ void gui::display()
         teamNoneResultView->resizeColumnToContents(5);
 
         teamNoneResultView->sortByColumn(2, Qt::DescendingOrder);
-        layout->addWidget(teamNoneResultView, 9,0,1,2);       
+        layout->addWidget(teamNoneResultView, 9,0,1,2);
     }
 }

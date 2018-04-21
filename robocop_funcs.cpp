@@ -7,6 +7,7 @@
 #include "team.h"
 #include <QDirIterator>
 #include "robocop_funcs.h"
+#include <QRegExp>
 
 enum STATION_PROPERTIES
 {
@@ -29,6 +30,7 @@ vector<team>     AllTeams;
 static player* findStation(QString sta_mac);
 QString team_none_name(TEAM_NONE);
 
+static bool isVaildMACaddr(QString new_mac);
 
 
 bool get_team_by_file(QString team_file){
@@ -83,6 +85,14 @@ bool get_team_by_file(QString team_file){
                 qDebug() << "Found Candidate for Player: " <<  qPrintable((tplayer.at(1)).trimmed()) << " with MAC: "
                            <<  qPrintable((tplayer.at(0)).trimmed()) << endl;
                 player *playerx;
+
+                if(isVaildMACaddr(tplayer.at(PLAYER_MAC).trimmed())==false){
+                        qDebug("MAC %s is Invalid, skipping", qPrintable(tplayer.at(PLAYER_MAC).trimmed()));
+                        continue;
+                }
+
+
+
                 if((playerx = findStation(tplayer.at(PLAYER_MAC).trimmed()))==NULL){
                     qDebug("STA_MAC %s not already in the player LIST will INSERT\n",qPrintable(tplayer.at(PLAYER_MAC).toUpper().trimmed()) );
                     player* player1 = new player(tplayer.at(PLAYER_NAME).trimmed(), tplayer.at(PLAYER_MAC).trimmed(), tname.at(0).trimmed());
@@ -164,6 +174,7 @@ void parseNetCapture(QString capture_file){
            }
            QString sta_mac = sta_props.at(STATION_MAC).trimmed();
 
+
            QDateTime first_seen = QDateTime::fromString(sta_props.at(FIRST_TIME_SEEN).trimmed(),"yyyy-MM-dd hh:mm:ss");
            QDateTime last_seen = QDateTime::fromString(sta_props.at(LAST_TIME_SEEN).trimmed(),"yyyy-MM-dd hh:mm:ss");
            int power = sta_props.at(POWER).toInt();
@@ -172,11 +183,16 @@ void parseNetCapture(QString capture_file){
            qDebug("STA_MAC %s, First Time Seen %s, Last Time Seen %s, Power %d dBm, Packets %d \n",
                   qPrintable(sta_mac), qPrintable(first_seen.toString("dd-MM-yyyy hh:mm:ss")), qPrintable(last_seen.toString("dd-MM-yyyy hh:mm:ss")), power, packets);
 
+           if(isVaildMACaddr(sta_mac)==false){
+                   qDebug("MAC %s is Invalid, skipping",qPrintable(sta_mac));
+                   continue;
+           }
            player *player1;
 
            if((player1 = findStation(sta_mac) ) != NULL){
                qDebug("Station is already at database with %s, %s, %s", qPrintable((player1->mac())), qPrintable((player1->name())), qPrintable(player1->team_name()));
                player1->update(first_seen, last_seen, packets, power);
+               qDebug("%s is transmitting %d pakets/s\n", qPrintable((player1->name())), (int)player1->pkts_second());
            }else{
                qDebug("New Station Detected in Capture FILE %s, will insert in database and update stats \n", qPrintable(sta_mac));
                player *sta_new = new player(sta_mac, team_none_name);
@@ -238,6 +254,12 @@ void print_team(team *a_team){
 
 }
 
+void clean_AllPlayers_stat(void){
+
+    for(uint i = 0; i < AllPlayers.size(); i++){
+        AllPlayers[i]->clean_stats();
+    }
+}
 
 
 bool start_iw_mon(QString iw){
@@ -254,6 +276,9 @@ bool stop_iw_mon(QString iw){
     return (QProcess::execute(command)==QProcess::NormalExit);
 }
 
+static bool isVaildMACaddr(QString new_mac){
+    QRegExp macValidate("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$", Qt::CaseInsensitive, QRegExp::RegExp);
 
-
+    return macValidate.exactMatch(new_mac);
+}
 

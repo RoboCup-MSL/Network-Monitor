@@ -12,10 +12,11 @@ private:
     QDateTime sta_first_time_seen;
     QDateTime sta_last_time_seen;
     int sta_power = 0;
-    int sta_packets = 0;
+    uint sta_packets = 0;
     QString sta_team;
     bool sta_connected;
-    int sta_bandwith;
+    uint sta_bandwith;
+    uint sta_pkts_sec; //packets per second
 public:
     //Constructors
     player();
@@ -28,6 +29,7 @@ public:
     void disconnected();
     void connected();
     void update(QDateTime first_seen, QDateTime last_seen, int packets, int power);
+    void clean_stats();
 
     //Getters
     QString name();
@@ -35,6 +37,7 @@ public:
     QString team_name();
     QDateTime firstTimeSeen();
     QDateTime lastTimeSeen();
+    uint pkts_second();
     bool isConnected();
     int power();
     int packets();
