@@ -7,7 +7,6 @@
 #include <QBoxLayout>
 #include <QApplication>
 #include <QTableWidget>
-#include <QtWidgets>
 #include "gui.h"
 #include "team.h"
 #include "robocop_funcs.h"
@@ -20,18 +19,18 @@ gui::gui(QWidget *parent) : QWidget(parent)
     //if there aren't teams we're here doing nothing
     if(AllTeams.size()==0)
     {
-        QMessageBox::warning(
-            this,
+        QMessageBox::warning(this,
             tr("Error!"),
             tr("There are no teams!") );
         return;
     }
+
     //initialize     airodump
     airodump = new QProcess(this);
 
     //this will be the base layout
-    QVBoxLayout *baseLayout;
-    baseLayout = new QVBoxLayout(this);
+    QHBoxLayout *baseLayout;
+    baseLayout = new QHBoxLayout(this);
 
     //Question: is toolbox the best solution?
     toolbox = new QToolBox;
@@ -39,8 +38,8 @@ gui::gui(QWidget *parent) : QWidget(parent)
     baseLayout->addWidget(toolbox);
 
     //use grid
-    page = new QWidget;
-    layout = new QGridLayout(page);
+    inputsPage = new QWidget;
+    inputsLayout = new QGridLayout(inputsPage);
 
     //Button 1
     //button to get and set network name
@@ -48,8 +47,8 @@ gui::gui(QWidget *parent) : QWidget(parent)
     networkNameLabel = new QLabel;
     networkNameLabel->setFrameStyle(frameStyle);
     QPushButton *networkNameButton = new QPushButton(tr("Click to insert network BSSID:"));
-    layout->addWidget(networkNameButton, 0, 0);
-    layout->addWidget(networkNameLabel, 0, 1);
+    inputsLayout->addWidget(networkNameButton, 0, 0);
+    inputsLayout->addWidget(networkNameLabel, 0, 1);
 
     //connect to an action when we receive the input
     connect(networkNameButton, &QAbstractButton::clicked, this, &gui::setNetworkName);
@@ -65,8 +64,8 @@ gui::gui(QWidget *parent) : QWidget(parent)
     }
 
     connect(comboBoxWifiChannel, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &gui::on_comboBoxWifiChannel_currentIndexChanged);
-    layout->addWidget(channelTextLabel, 1, 0);
-    layout->addWidget(comboBoxWifiChannel, 1, 1);
+    inputsLayout->addWidget(channelTextLabel, 1, 0);
+    inputsLayout->addWidget(comboBoxWifiChannel, 1, 1);
 
     //buttons 3 and 4
     //select teams
@@ -86,118 +85,42 @@ gui::gui(QWidget *parent) : QWidget(parent)
     connect(comboBoxTeamA, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &gui::on_comboBoxTeamA_currentIndexChanged);
     connect(comboBoxTeamB, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &gui::on_comboBoxTeamB_currentIndexChanged);
 
-    layout->addWidget(teamATextLabel, 2, 0);
-    layout->addWidget(comboBoxTeamA, 2, 1);
-    layout->addWidget(teamBTextLabel, 3, 0);
-    layout->addWidget(comboBoxTeamB, 3, 1);
+    inputsLayout->addWidget(teamATextLabel, 2, 0);
+    inputsLayout->addWidget(comboBoxTeamA, 2, 1);
+    inputsLayout->addWidget(teamBTextLabel, 3, 0);
+    inputsLayout->addWidget(comboBoxTeamB, 3, 1);
+
+    toolbox->addItem(inputsPage, tr("Click here for inputs"));
+
+    //use grid
+    gamePage = new QWidget;
+    gameLayout = new QGridLayout(gamePage);
 
     //Tables with stations by team
-    //Note: I should have done it in a function
-    //first I need the current time
-
     //Team A
     teamATableLabel = new QLabel(AllTeams[comboBoxTeamA->currentIndex()].name());
-    QStandardItemModel *teamAStations = new QStandardItemModel();
-    teamAResultView = new QTableView();
-    teamAResultView->setModel(teamAStations);
-    teamAResultView->horizontalHeader()->setStretchLastSection(true);
+    gameLayout->addWidget(teamATableLabel, 0,0,1,2);
+    teamResultView[0]= new QTableView();
+    gameLayout->addWidget(teamResultView[0], 1,0,1,2);
 
-    teamAResultView->setWordWrap(true);
-    teamAResultView->verticalHeader()->hide();
-    teamAResultView->setSortingEnabled(true);
-    teamAStations->setColumnCount(6);
-    teamAStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Packets" << "Power" );
-    for(int i=0;i<AllTeams[comboBoxTeamA->currentIndex()].get_team_size();i++)
-    {
-        player *teamAPlayer;
-        QList<QStandardItem *> standardItemsList;
-
-        AllTeams[comboBoxTeamA->currentIndex()].get_player(i,&teamAPlayer);
-        standardItemsList.append(new QStandardItem(teamAPlayer->mac()));
-        standardItemsList.append(new QStandardItem(teamAPlayer->firstTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
-        standardItemsList.append(new QStandardItem(teamAPlayer->lastTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
-        standardItemsList.append(new QStandardItem(teamAPlayer->name()));
-        standardItemsList.append(new QStandardItem(QString::number(teamAPlayer->packets())));
-        standardItemsList.append(new QStandardItem(QString::number(teamAPlayer->power())));
-        //standardItemsList.setStyleSheet("QListView { background-color: #80FF80 }");
-        teamAStations->insertRow(teamAStations->rowCount(), standardItemsList);
-
-    }
-    teamAResultView->resizeColumnToContents(0);
-    teamAResultView->resizeColumnToContents(1);
-    teamAResultView->resizeColumnToContents(2);
-    teamAResultView->resizeColumnToContents(3);
-    teamAResultView->resizeColumnToContents(4);
-    teamAResultView->resizeColumnToContents(5);
-    teamAResultView->sortByColumn(2, Qt::DescendingOrder);
-
-    layout->addWidget(teamATableLabel, 4,0,1,2);
-    layout->addWidget(teamAResultView, 5,0,1,2);
 
     //Team B
     teamBTableLabel = new QLabel(AllTeams[comboBoxTeamB->currentIndex()].name());
-    QStandardItemModel *teamBStations = new QStandardItemModel();
-    teamBResultView = new QTableView();
-    teamBResultView->setModel(teamBStations);
-    teamBResultView->horizontalHeader()->setStretchLastSection(true);
-    teamBResultView->setSortingEnabled(true);
-
-    teamBStations->setColumnCount(6);
-    teamBStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Packets" << "Power" );
-    teamBResultView->verticalHeader()->hide();
-
-    for(int i=0;i<AllTeams[comboBoxTeamB->currentIndex()].get_team_size();i++)
-    {
-        player *teamBPlayer;
-        QList<QStandardItem *> standardItemsList;
-
-        AllTeams[comboBoxTeamB->currentIndex()].get_player(i,&teamBPlayer);
-        standardItemsList.append(new QStandardItem(teamBPlayer->mac()));
-        standardItemsList.append(new QStandardItem(teamBPlayer->firstTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
-        standardItemsList.append(new QStandardItem(teamBPlayer->lastTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
-        standardItemsList.append(new QStandardItem(teamBPlayer->name()));
-        standardItemsList.append(new QStandardItem(QString::number(teamBPlayer->packets())));
-        standardItemsList.append(new QStandardItem(QString::number(teamBPlayer->power())));
-        teamBStations->insertRow(teamBStations->rowCount(), standardItemsList);
-    }
-    teamBResultView->resizeColumnToContents(0);
-    teamBResultView->resizeColumnToContents(1);
-    teamBResultView->resizeColumnToContents(2);
-    teamBResultView->resizeColumnToContents(3);
-    teamBResultView->resizeColumnToContents(4);
-    teamBResultView->resizeColumnToContents(5);
-    teamBResultView->sortByColumn(2, Qt::DescendingOrder);
-
-    layout->addWidget(teamBTableLabel, 6,0,1,2);
-    layout->addWidget(teamBResultView, 7,0,1,2);
+    gameLayout->addWidget(teamBTableLabel, 2,0,1,2);
+    teamResultView[1]= new QTableView();
+    gameLayout->addWidget(teamResultView[1], 3,0,1,2);
 
     //None
-    teamNoneTableLabel = new QLabel("Unknown stations");
+    teamNoneTableLabel = new QLabel("Other stations");
+    gameLayout->addWidget(teamNoneTableLabel, 4,0,1,2);
+    teamResultView[2]= new QTableView();
+    gameLayout->addWidget(teamResultView[2], 5,0,1,2);
 
-    QStandardItemModel *teamNoneStations = new QStandardItemModel();
-    teamNoneResultView = new QTableView();
-    teamNoneResultView->setModel(teamNoneStations);
-    teamNoneResultView->horizontalHeader()->setStretchLastSection(true);
-    teamNoneResultView->setSortingEnabled(true);
-
-    teamNoneStations->setColumnCount(6);
-        teamNoneStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Packets" << "Power" );
-        teamNoneResultView->resizeColumnToContents(0);
-    teamNoneResultView->resizeColumnToContents(1);
-    teamNoneResultView->resizeColumnToContents(2);
-    teamNoneResultView->resizeColumnToContents(3);
-    teamNoneResultView->resizeColumnToContents(4);
-    teamNoneResultView->resizeColumnToContents(5);
-    teamNoneResultView->sortByColumn(2, Qt::DescendingOrder);
-
-    layout->addWidget(teamNoneTableLabel, 8,0,1,2);
-    layout->addWidget(teamNoneResultView, 9,0,1,2);
-
-    toolbox->addItem(page, tr("Game"));
+    toolbox->addItem(gamePage, tr("Click here for game"));
 
     //refresh every second
     timer = new QTimer(this);
-    timer->setInterval(250);
+    timer->setInterval(750);
     timer->start(1000);
     connect(timer, &QTimer::timeout, this, &gui::display);
 }
@@ -258,11 +181,8 @@ void gui::on_comboBoxWifiChannel_currentIndexChanged()
 void gui::processAirodump()
 {
     //check if we can start airodump
-
     if(networkName==NULL)
         return;
-
-    clean_AllPlayers_stat();
 
     //check the airodump state
     if(airodump->state()!=QProcess::NotRunning)
@@ -297,7 +217,7 @@ void gui::on_comboBoxTeamA_currentIndexChanged()
 {
     delete teamATableLabel;
     teamATableLabel = new QLabel(AllTeams[comboBoxTeamA->currentIndex()].name());
-    layout->addWidget(teamATableLabel, 4,0,1,2);
+    gameLayout->addWidget(teamATableLabel, 0,0,1,2);
     processAirodump();
 }
 
@@ -305,7 +225,7 @@ void gui::on_comboBoxTeamB_currentIndexChanged()
 {
     delete teamBTableLabel;
     teamBTableLabel = new QLabel(AllTeams[comboBoxTeamB->currentIndex()].name());
-    layout->addWidget(teamBTableLabel, 6,0,1,2);
+    gameLayout->addWidget(teamBTableLabel, 2,0,1,2);
     processAirodump();
 }
 
@@ -321,117 +241,94 @@ void gui::display()
 
     //Team A
     QStandardItemModel *teamAStations = new QStandardItemModel();
-    delete teamAResultView;
-    teamAResultView = new QTableView();
-    teamAResultView->setModel(teamAStations);
-    teamAResultView->setWordWrap(1);
-
-    teamAStations->setColumnCount(6);
-    teamAStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Packets" << "Power" );
-    teamAResultView->horizontalHeader()->setStretchLastSection(true);
-    teamAResultView->setWordWrap(true);
-    teamAResultView->verticalHeader()->hide();
-    teamAResultView->setSortingEnabled(true);
 
     for(int i=0;i<AllTeams[comboBoxTeamA->currentIndex()].get_team_size();i++)
     {
         player *teamAPlayer;
-        QList<QStandardItem *> standardItemsList;
 
         AllTeams[comboBoxTeamA->currentIndex()].get_player(i,&teamAPlayer);
-        standardItemsList.append(new QStandardItem(teamAPlayer->mac()));
-        standardItemsList.append(new QStandardItem(teamAPlayer->firstTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
-        standardItemsList.append(new QStandardItem(teamAPlayer->lastTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
-        standardItemsList.append(new QStandardItem(teamAPlayer->name()));
-        standardItemsList.append(new QStandardItem(QString::number(teamAPlayer->packets())));
-        standardItemsList.append(new QStandardItem(QString::number(teamAPlayer->power())));
-        teamAStations->insertRow(teamAStations->rowCount(), standardItemsList);
+        teamAStations->insertRow(i, addPlayerToList(teamAPlayer));
     }
-
-    teamAResultView->resizeColumnToContents(0);
-    teamAResultView->resizeColumnToContents(1);
-    teamAResultView->resizeColumnToContents(2);
-    teamAResultView->resizeColumnToContents(3);
-    teamAResultView->resizeColumnToContents(4);
-    teamAResultView->resizeColumnToContents(5);
-    teamAResultView->sortByColumn(2, Qt::DescendingOrder);
-
-    layout->addWidget(teamAResultView, 5,0,1,2);
+    updateTable(teamAStations, 0);
 
     //Team B
     QStandardItemModel *teamBStations = new QStandardItemModel();
-    delete teamBResultView;
-    teamBResultView = new QTableView();
-    teamBResultView->setModel(teamBStations);
-    teamBResultView->setSortingEnabled(true);
-
-    teamBStations->setColumnCount(6);
-    teamBStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Packets" << "Power" );
-    teamBResultView->horizontalHeader()->setStretchLastSection(true);
-    teamBResultView->verticalHeader()->hide();
 
     for(int i=0;i<AllTeams[comboBoxTeamB->currentIndex()].get_team_size();i++)
     {
         player *teamBPlayer;
-        QList<QStandardItem *> standardItemsList;
 
         AllTeams[comboBoxTeamB->currentIndex()].get_player(i, &teamBPlayer);
-        standardItemsList.append(new QStandardItem(teamBPlayer->mac()));
-        standardItemsList.append(new QStandardItem(teamBPlayer->firstTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
-        standardItemsList.append(new QStandardItem(teamBPlayer->lastTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
-        standardItemsList.append(new QStandardItem(teamBPlayer->name()));
-        standardItemsList.append(new QStandardItem(QString::number(teamBPlayer->packets())));
-        standardItemsList.append(new QStandardItem(QString::number(teamBPlayer->power())));
-        teamBStations->insertRow(teamBStations->rowCount(), standardItemsList);
+        teamBStations->insertRow(i, addPlayerToList(teamBPlayer));
     }
-    teamBResultView->resizeColumnToContents(0);
-    teamBResultView->resizeColumnToContents(1);
-    teamBResultView->resizeColumnToContents(2);
-    teamBResultView->resizeColumnToContents(3);
-    teamBResultView->resizeColumnToContents(4);
-    teamBResultView->resizeColumnToContents(5);
-    teamBResultView->sortByColumn(2, Qt::DescendingOrder);
+    updateTable(teamBStations, 1);
 
-    layout->addWidget(teamBResultView, 7,0,1,2);
+
     team* teamNone;
     if((teamNone=get_team_by_name(team_none_name))!=NULL)
     {
         QStandardItemModel *teamNoneStations = new QStandardItemModel();
-        delete teamNoneResultView;
-        teamNoneResultView = new QTableView();
-        teamNoneResultView->setModel(teamNoneStations);
-        teamNoneResultView->horizontalHeader()->setStretchLastSection(true);
-        teamNoneResultView->setSortingEnabled(true);
-
-        teamNoneStations->setColumnCount(6);
-        teamNoneStations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Packets" << "Power" );
-        teamNoneResultView->verticalHeader()->hide();
-
 
         for(int i=0;i<teamNone->get_team_size();i++)
         {
             player *teamNonePlayer;
-            QList<QStandardItem *> standardItemsList;
 
             teamNone->get_player(i,&teamNonePlayer);
-            standardItemsList.append(new QStandardItem(teamNonePlayer->mac()));
-            standardItemsList.append(new QStandardItem(teamNonePlayer->firstTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
-            standardItemsList.append(new QStandardItem(teamNonePlayer->lastTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
-            standardItemsList.append(new QStandardItem(teamNonePlayer->name()));
-            standardItemsList.append(new QStandardItem(QString::number(teamNonePlayer->packets())));
-            standardItemsList.append(new QStandardItem(QString::number(teamNonePlayer->power())));
-
-
-            teamNoneStations->insertRow(teamNoneStations->rowCount(), standardItemsList);
+            teamNoneStations->insertRow(i, addPlayerToList(teamNonePlayer));
         }
-        teamNoneResultView->resizeColumnToContents(0);
-        teamNoneResultView->resizeColumnToContents(1);
-        teamNoneResultView->resizeColumnToContents(2);
-        teamNoneResultView->resizeColumnToContents(3);
-        teamNoneResultView->resizeColumnToContents(4);
-        teamNoneResultView->resizeColumnToContents(5);
+        updateTable(teamNoneStations, 2);
+    }
+}
 
-        teamNoneResultView->sortByColumn(2, Qt::DescendingOrder);
-        layout->addWidget(teamNoneResultView, 9,0,1,2);
+QList<QStandardItem *> gui::addPlayerToList(player *player_to_add)
+{
+    QList<QStandardItem *> standardItemsList;
+
+    standardItemsList.append(new QStandardItem(player_to_add->mac()));
+    standardItemsList.append(new QStandardItem(player_to_add->firstTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
+    standardItemsList.append(new QStandardItem(player_to_add->lastTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
+    standardItemsList.append(new QStandardItem(player_to_add->name()));
+    standardItemsList.append(new QStandardItem(QString::number(player_to_add->packets())));
+
+    return standardItemsList;
+}
+
+void gui::updateTable(QStandardItemModel *stations, int tableIndex)
+{
+    stations->setColumnCount(6);
+    stations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Packets" << "Power" );
+    teamResultView[tableIndex]->setModel(stations);
+    teamResultView[tableIndex]->resizeColumnToContents(0);
+    teamResultView[tableIndex]->resizeColumnToContents(1);
+    teamResultView[tableIndex]->resizeColumnToContents(2);
+    teamResultView[tableIndex]->resizeColumnToContents(3);
+    teamResultView[tableIndex]->resizeColumnToContents(4);
+    teamResultView[tableIndex]->resizeColumnToContents(5);
+    teamResultView[tableIndex]->sortByColumn(2, Qt::DescendingOrder);
+    gameLayout->addWidget(teamResultView[tableIndex], tableIndex*2+1,0,1,2);
+}
+
+//comboBoxIndex: 1-TeamA 2-TeamB
+void gui::changeGameTeams(int comboBoxIndex, QString teamName)
+{
+    //check if the team is on combobox
+    int index=comboBoxTeamA->findText(teamName);
+    if(index == -1)
+    {
+        qDebug("Couldn't change game team. Team %s wasn't found.", qPrintable(teamName));
+        return;
+    }
+
+    if(comboBoxIndex==1)
+    {
+        comboBoxTeamA->setCurrentIndex(index);
+    }
+    else if(comboBoxIndex==2)
+    {
+        comboBoxTeamB->setCurrentIndex(index);
+    }
+    else
+    {
+        qDebug("Couldn't change game team. Invalid index %d was found.", comboBoxIndex);
     }
 }
