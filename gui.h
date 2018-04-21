@@ -5,6 +5,8 @@
 #include <QBoxLayout>
 #include <QToolBox>
 #include <QProcess>
+#include <QtWidgets>
+#include "player.h"
 
 #define NUMBEROFWIFICHANNELS 41
 class QLabel;
@@ -27,21 +29,24 @@ public slots:
 private slots:
 
 private:
+    QList<QStandardItem *> addPlayerToList(player *player_to_add);
+    void updateTable(QStandardItemModel *stations, int tableIndex);
     void processAirodump();
     QString *networkName=NULL;
     QToolBox *toolbox;
     QLabel *networkNameLabel;
-    QWidget *page;
+    QWidget *inputsPage;
+    QWidget *gamePage;
     QComboBox *comboBoxWifiChannel;
     QComboBox *comboBoxTeamA;
     QComboBox *comboBoxTeamB;
-    QLabel *teamATableLabel;
-    QLabel *teamBTableLabel;
-    QLabel *teamNoneTableLabel;
     QTimer *timer;
-    QGridLayout *layout;
+    QGridLayout *inputsLayout;
+    QGridLayout *gameLayout;
     QProcess *airodump;
     QString *cap_file_name = NULL;
+    QLabel *teamTableLabel[3];
+    QTableView *teamResultView[3];
 };
 
 #endif // GUI_H
