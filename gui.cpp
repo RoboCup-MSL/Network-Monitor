@@ -247,7 +247,7 @@ void gui::display()
         player *teamAPlayer;
 
         AllTeams[comboBoxTeamA->currentIndex()].get_player(i,&teamAPlayer);
-        teamAStations->insertRow(i, addPlayerToList(teamAPlayer));
+        teamAStations->insertRow(i, addPlayerToList(teamAPlayer, false));
     }
     updateTable(teamAStations, 0);
 
@@ -259,7 +259,7 @@ void gui::display()
         player *teamBPlayer;
 
         AllTeams[comboBoxTeamB->currentIndex()].get_player(i, &teamBPlayer);
-        teamBStations->insertRow(i, addPlayerToList(teamBPlayer));
+        teamBStations->insertRow(i, addPlayerToList(teamBPlayer, false));
     }
     updateTable(teamBStations, 1);
 
@@ -274,13 +274,13 @@ void gui::display()
             player *teamNonePlayer;
 
             teamNone->get_player(i,&teamNonePlayer);
-            teamNoneStations->insertRow(i, addPlayerToList(teamNonePlayer));
+            teamNoneStations->insertRow(i, addPlayerToList(teamNonePlayer, true));
         }
         updateTable(teamNoneStations, 2);
     }
 }
 
-QList<QStandardItem *> gui::addPlayerToList(player *player_to_add)
+QList<QStandardItem *> gui::addPlayerToList(player *player_to_add, bool showTeam)
 {
     QList<QStandardItem *> standardItemsList;
 
@@ -288,22 +288,58 @@ QList<QStandardItem *> gui::addPlayerToList(player *player_to_add)
     standardItemsList.append(new QStandardItem(player_to_add->firstTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
     standardItemsList.append(new QStandardItem(player_to_add->lastTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
     standardItemsList.append(new QStandardItem(player_to_add->name()));
+    if(showTeam)
+        standardItemsList.append(new QStandardItem(player_to_add->team_name()));
+
     standardItemsList.append(new QStandardItem(QString::number(player_to_add->packets())));
+    standardItemsList.append(new QStandardItem(QString::number(player_to_add->pkts_second())));
+
+    if(player_to_add->power()!=std::numeric_limits<int>::min())
+    {
+        standardItemsList.append(new QStandardItem(QString::number(player_to_add->power())));
+    }
+    else
+    {
+        standardItemsList.append(new QStandardItem("-INF"));
+    }
 
     return standardItemsList;
 }
 
 void gui::updateTable(QStandardItemModel *stations, int tableIndex)
 {
-    stations->setColumnCount(6);
-    stations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Packets" << "Power" );
-    teamResultView[tableIndex]->setModel(stations);
-    teamResultView[tableIndex]->resizeColumnToContents(0);
-    teamResultView[tableIndex]->resizeColumnToContents(1);
-    teamResultView[tableIndex]->resizeColumnToContents(2);
-    teamResultView[tableIndex]->resizeColumnToContents(3);
-    teamResultView[tableIndex]->resizeColumnToContents(4);
-    teamResultView[tableIndex]->resizeColumnToContents(5);
+
+    //if it's the others table we need to and a column to team name
+    if(tableIndex==2)
+    {
+        stations->setColumnCount(7);
+        stations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Team Name"<< "Packets" << "Packets/sec"<< "Power(dBm)" );
+
+        teamResultView[tableIndex]->setModel(stations);
+        teamResultView[tableIndex]->resizeColumnToContents(0);
+        teamResultView[tableIndex]->resizeColumnToContents(1);
+        teamResultView[tableIndex]->resizeColumnToContents(2);
+        teamResultView[tableIndex]->resizeColumnToContents(3);
+        teamResultView[tableIndex]->resizeColumnToContents(4);
+        teamResultView[tableIndex]->resizeColumnToContents(5);
+        teamResultView[tableIndex]->resizeColumnToContents(6);
+        teamResultView[tableIndex]->resizeColumnToContents(7);
+
+    }
+    else
+    {
+        stations->setColumnCount(6);
+        stations->setHorizontalHeaderLabels(QStringList() << "MAC" << "First Seen" << "Last Seen" << "Name"  << "Packets" << "Packets/sec"<< "Power(dBm)" );
+        teamResultView[tableIndex]->setModel(stations);
+        teamResultView[tableIndex]->resizeColumnToContents(0);
+        teamResultView[tableIndex]->resizeColumnToContents(1);
+        teamResultView[tableIndex]->resizeColumnToContents(2);
+        teamResultView[tableIndex]->resizeColumnToContents(3);
+        teamResultView[tableIndex]->resizeColumnToContents(4);
+        teamResultView[tableIndex]->resizeColumnToContents(5);
+        teamResultView[tableIndex]->resizeColumnToContents(6);
+
+    }
     teamResultView[tableIndex]->sortByColumn(2, Qt::DescendingOrder);
     gameLayout->addWidget(teamResultView[tableIndex], tableIndex*2+1,0,1,2);
 }
