@@ -29,6 +29,7 @@ public slots:
 private slots:
 
 private:
+    void changeGameTeams(int comboBoxIndex, QString teamName);
     QList<QStandardItem *> addPlayerToList(player *player_to_add);
     void updateTable(QStandardItemModel *stations, int tableIndex);
     void processAirodump();
