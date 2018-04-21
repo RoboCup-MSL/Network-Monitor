@@ -338,8 +338,8 @@ void gui::updateTable(QStandardItemModel *stations, int tableIndex)
         teamResultView[tableIndex]->resizeColumnToContents(4);
         teamResultView[tableIndex]->resizeColumnToContents(5);
         teamResultView[tableIndex]->resizeColumnToContents(6);
-
     }
+    teamResultView[tableIndex]->horizontalHeader()->setStretchLastSection(true);
     teamResultView[tableIndex]->sortByColumn(2, Qt::DescendingOrder);
     gameLayout->addWidget(teamResultView[tableIndex], tableIndex*2+1,0,1,2);
 }
