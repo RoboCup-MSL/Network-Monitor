@@ -30,7 +30,7 @@ private slots:
 
 private:
     void changeGameTeams(int comboBoxIndex, QString teamName);
-    QList<QStandardItem *> addPlayerToList(player *player_to_add);
+    QList<QStandardItem *> addPlayerToList(player *player_to_add, bool showTeam);
     void updateTable(QStandardItemModel *stations, int tableIndex);
     void processAirodump();
     QString *networkName=NULL;
