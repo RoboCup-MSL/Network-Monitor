@@ -40,6 +40,9 @@ private:
     QComboBox *comboBoxWifiChannel;
     QComboBox *comboBoxTeamA;
     QComboBox *comboBoxTeamB;
+    QLabel *teamATableLabel;
+    QLabel *teamBTableLabel;
+    QLabel *teamNoneTableLabel;
     QTimer *timer;
     QGridLayout *inputsLayout;
     QGridLayout *gameLayout;
