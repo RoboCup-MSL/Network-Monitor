@@ -124,25 +124,6 @@ gui::gui(QWidget *parent) : QWidget(parent)
     connect(timer, &QTimer::timeout, this, &gui::display);
 }
 
-bool isValidMacAddress(const char* mac) {
-    int i = 0;
-    int s = 0;
-
-    while (*mac) {
-        if (std::isxdigit(*mac)) {
-            i++;
-        } else if (*mac == ':' || *mac == '-') {
-            if (i == 0 || i / 2 - 1 != s)
-                break;
-            ++s;
-        }
-        else {
-            s = -1;
-        }
-        ++mac;
-    }
-    return (i == 12 && (s == 5 || s == 0));
-}
 
 void gui::setNetworkName()
 {
@@ -153,7 +134,7 @@ void gui::setNetworkName()
                                          tr("Insert BSSID:\n(BSSID is the MAC address of the wireless access point)"), QLineEdit::Normal,
                                          "", &okButton);
 
-    isValidMac = isValidMacAddress(text.toStdString().c_str());
+    isValidMac = isValidMACaddr(text.trimmed());
 
     if (okButton && !text.isEmpty() && isValidMac)
     {
@@ -246,6 +227,8 @@ void gui::display()
     }
     updateTable(teamAStations, 0);
 
+
+
     //Team B
     QStandardItemModel *teamBStations = new QStandardItemModel();
 
@@ -259,6 +242,28 @@ void gui::display()
     updateTable(teamBStations, 1);
 
 
+    //other stations
+    QStandardItemModel *otherStations = new QStandardItemModel();
+    //numberofplayers
+    int counter =0;
+
+    for(uint i=0;i< AllPlayers.size();i++)
+    {
+        if(AllPlayers[i]->isConnected())
+        {
+            if(AllPlayers[i]->team_name() != NULL)
+            {
+                if((AllPlayers[i]->team_name() == AllTeams[comboBoxTeamA->currentIndex()].name()) || (AllPlayers[i]->team_name() == AllTeams[comboBoxTeamB->currentIndex()].name()))
+                {
+                    continue;
+                }
+            }
+            otherStations->insertRow(counter, addPlayerToList(AllPlayers[i], true));
+            counter++;
+        }
+    }
+
+    updateTable(otherStations, 2);
 }
 
 QList<QStandardItem *> gui::addPlayerToList(player *player_to_add, bool showTeam)
@@ -270,8 +275,9 @@ QList<QStandardItem *> gui::addPlayerToList(player *player_to_add, bool showTeam
     standardItemsList.append(new QStandardItem(player_to_add->lastTimeSeen().toString("yyyy-MM-dd hh:mm:ss")));
     standardItemsList.append(new QStandardItem(player_to_add->name()));
     if(showTeam)
+    {
         standardItemsList.append(new QStandardItem(player_to_add->team_name()));
-
+    }
     standardItemsList.append(new QStandardItem(QString::number(player_to_add->packets())));
     standardItemsList.append(new QStandardItem(QString::number(player_to_add->pkts_second())));
 
@@ -289,6 +295,10 @@ QList<QStandardItem *> gui::addPlayerToList(player *player_to_add, bool showTeam
 
 void gui::updateTable(QStandardItemModel *stations, int tableIndex)
 {
+
+    teamResultView[tableIndex]->setWordWrap(true);
+    teamResultView[tableIndex]->verticalHeader()->hide();
+    teamResultView[tableIndex]->setSortingEnabled(true);
 
     //if it's the others table we need to and a column to team name
     if(tableIndex==2)
