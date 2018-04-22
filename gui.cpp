@@ -120,7 +120,6 @@ gui::gui(QWidget *parent) : QWidget(parent)
 
     //refresh every second
     timer = new QTimer(this);
-    timer->setInterval(750);
     timer->start(1000);
     connect(timer, &QTimer::timeout, this, &gui::display);
 }
@@ -158,7 +157,7 @@ void gui::setNetworkName()
 
     if (okButton && !text.isEmpty() && isValidMac)
     {
-        networkName=new QString(text);
+        networkName=new QString(text.trimmed());
         networkNameLabel->setText(text);
     }
     if(!isValidMac)
@@ -340,7 +339,7 @@ void gui::updateTable(QStandardItemModel *stations, int tableIndex)
         teamResultView[tableIndex]->resizeColumnToContents(6);
     }
     teamResultView[tableIndex]->horizontalHeader()->setStretchLastSection(true);
-    teamResultView[tableIndex]->sortByColumn(2, Qt::DescendingOrder);
+    //teamResultView[tableIndex]->sortByColumn(2, Qt::DescendingOrder);
     gameLayout->addWidget(teamResultView[tableIndex], tableIndex*2+1,0,1,2);
 }
 
