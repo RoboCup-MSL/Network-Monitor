@@ -26,7 +26,6 @@ void clean_AllPlayers_stat(void);
 
 extern vector<player *>   AllPlayers;
 extern vector<team>     AllTeams;
-extern QString      team_none_name;
 
 bool isValidMACaddr(QString new_mac);
 

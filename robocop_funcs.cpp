@@ -28,7 +28,7 @@ enum PLAYER_PROPERTIES{
 vector<player *>   AllPlayers;
 vector<team>     AllTeams;
 static player* findStation(QString sta_mac);
-QString team_none_name(TEAM_NONE);
+
 
 
 
@@ -86,7 +86,7 @@ bool get_team_by_file(QString team_file){
                            <<  qPrintable((tplayer.at(0)).trimmed()) << endl;
                 player *playerx;
 
-                if(isVaildMACaddr(tplayer.at(PLAYER_MAC).trimmed())==false){
+                if(isValidMACaddr(tplayer.at(PLAYER_MAC).trimmed())==false){
                         qDebug("MAC %s is Invalid, skipping", qPrintable(tplayer.at(PLAYER_MAC).trimmed()));
                         continue;
                 }
@@ -184,7 +184,7 @@ void parseNetCapture(QString capture_file){
            qDebug("STA_MAC %s, First Time Seen %s, Last Time Seen %s, Power %d dBm, Packets %d \n",
                   qPrintable(sta_mac), qPrintable(first_seen.toString("dd-MM-yyyy hh:mm:ss")), qPrintable(last_seen.toString("dd-MM-yyyy hh:mm:ss")), power, packets);
 
-           if(isVaildMACaddr(sta_mac)==false){
+           if(isValidMACaddr(sta_mac)==false){
                    qDebug("MAC %s is Invalid, skipping",qPrintable(sta_mac));
                    continue;
            }
@@ -196,23 +196,9 @@ void parseNetCapture(QString capture_file){
                qDebug("%s is transmitting %d pakets/s\n", qPrintable((player1->name())), (int)player1->pkts_second());
            }else{
                qDebug("New Station Detected in Capture FILE %s, will insert in database and update stats \n", qPrintable(sta_mac));
-               player *sta_new = new player(sta_mac, team_none_name);
+               player *sta_new = new player(sta_mac);
                sta_new->update(first_seen, last_seen, packets, power);
                AllPlayers.push_back(sta_new);
-               // Evaluate if Team None already exists
-               team *team_none;
-                if((team_none = get_team_by_name(team_none_name)) != NULL)
-                {
-                   qDebug("Team %s Already Exists in the system, insert player", qPrintable(team_none->name()));
-                   team_none->insertPlayer(sta_new);
-                }
-                else
-                {
-                   team_none = new team(team_none_name);
-                   team_none->insertPlayer(sta_new);
-                   AllTeams.push_back(*team_none);
-                   delete team_none;
-                }
            }
        }
     }
@@ -278,7 +264,7 @@ bool stop_iw_mon(QString iw){
     return (QProcess::execute(command)==QProcess::NormalExit);
 }
 
-bool isValdMACaddr(QString new_mac){
+bool isValidMACaddr(QString new_mac){
     QRegExp macValidate("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$", Qt::CaseInsensitive, QRegExp::RegExp);
 
     return macValidate.exactMatch(new_mac);

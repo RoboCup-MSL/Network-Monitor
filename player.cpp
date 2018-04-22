@@ -16,9 +16,8 @@ player::player(QString name, QString mac, QString team)
     sta_pkts_sec = 0;
 }
 
-player::player(QString mac, QString team)
-{   sta_team = QString(team);
-    sta_mac = QString(mac.toUpper()); // Saving MAC addresses always in the same case
+player::player(QString mac)
+{   sta_mac = QString(mac.toUpper()); // Saving MAC addresses always in the same case
     sta_power = std::numeric_limits<int>::min();
     sta_power = std::numeric_limits<int>::min();
     sta_packets = 0;
@@ -35,7 +34,6 @@ void player::update(QDateTime first_seen, QDateTime last_seen, int packets, int 
 
     if((sta_last_time_seen.isValid() == true) && (last_seen.isValid() == true))
     {
-        qDebug("calc1");
         int diff_packets =  packets - sta_packets;
         qint64 diff_time_msec = sta_last_time_seen.msecsTo(last_seen);
         if(diff_time_msec > 0)
