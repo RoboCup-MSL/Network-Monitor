@@ -1,0 +1,5 @@
+#RoboCup Team Descriptor
+Team Name: CAMBADA DEV
+#Players - All lines below will be interpreted as the Players of this team with the following notation: <PLAYER MAC ADDRESS>,<PLAYER ID>
+d8:fc:93:a3:f6:06, Asus 	
+88:53:2e:84:44:37, Fujitsu 	

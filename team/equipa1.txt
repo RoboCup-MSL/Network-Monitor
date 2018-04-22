@@ -1,0 +1,6 @@
+#RoboCup Team Descriptor
+Team Name: BANANAPOWER
+#Players - All lines below will be interpreted as the Players of this team with the following notation: <PLAYER MAC ADDRESS>,<PLAYER ID>
+18:F0:E4:ED:B5:E1, Cesar
+05:06:07:08:09:0a, UVA
+0f:06:07:0A:09:01, MORANGO

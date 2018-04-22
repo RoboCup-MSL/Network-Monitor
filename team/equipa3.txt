@@ -1,0 +1,6 @@
+#RoboCup Team Descriptor
+Team Name: Kiwi POWER
+#Players - All lines below will be interpreted as the Players of this team with the following notation: <PLAYER MAC ADDRESS>,<PLAYER ID>
+94:39:E5:A3:71:EF, Ivo
+74:75:48:39:A5:B4, Fire
+0e:06:07:08:09:01, Banana

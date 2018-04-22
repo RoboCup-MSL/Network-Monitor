@@ -1,0 +1,11 @@
+#RoboCup Team Descriptor
+Team Name: Tech United
+#Players - All lines below will be interpreted as the Players of this team with the following notation: <PLAYER MAC ADDRESS>,<PLAYER ID>
+98:de:d0:1b:14:7b, turtle1                         
+98:de:d0:11:51:85, turtle2                         
+98:de:d0:1b:1c:ed, turtle3                         
+84:16:f9:07:50:a1, turtle4                         
+84:16:f9:07:49:1d, turtle5                         
+98:de:d0:1b:28:cf, turtle6                        
+84:16:f9:07:a1:3d, turtle4W
+98:de:d0:1b:1c:de, turtle8W
