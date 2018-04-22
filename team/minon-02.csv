@@ -1,9 +1,0 @@
-
-BSSID, First time seen, Last time seen, channel, Speed, Privacy, Cipher, Authentication, Power, # beacons, # IV, LAN IP, ID-length, ESSID, Key
-9C:97:26:36:BC:1D, 2018-03-18 17:36:11, 2018-03-18 17:46:29, 11,  54, WPA2WPA , CCMP TKIP,PSK, -45,     5733,    78730,   0.  0.  0.  0,  10, Minnozinha, 
-
-Station MAC, First time seen, Last time seen, Power, # packets, BSSID, Probed ESSIDs
-B8:03:05:21:4B:2A, 2018-03-18 17:36:11, 2018-03-18 17:46:28, -52,    27233, 9C:97:26:36:BC:1D,
-74:C6:3B:06:AC:2D, 2018-03-18 17:36:11, 2018-03-18 17:46:28, -40,    48562, 9C:97:26:36:BC:1D,
-18:F0:E4:ED:B5:E1, 2018-03-18 17:36:11, 2018-03-18 17:46:29, -35,     3816, 9C:97:26:36:BC:1D,
-
