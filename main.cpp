@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     //QString teamC("./equipa3.txt");
     //QString capFile("./lab-03.csv");
     QString iw_name("wlp7s0");
-    QString mon_name("mon0");
+    QString mon_name("wlp7s0mon");
     stop_iw_mon(mon_name);
     start_iw_mon(iw_name);
 

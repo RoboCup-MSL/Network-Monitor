@@ -52,7 +52,11 @@ void player::update(QDateTime first_seen, QDateTime last_seen, int packets, int 
     sta_packets = packets;
     sta_power = power;
 
-
+    //Evaluate if station is connected
+    if((sta_last_time_seen.secsTo(QDateTime::currentDateTime()) < CONNECTION_TIMEOUT) == true)
+        sta_connected = true;
+    else
+        sta_connected = false;
 }
 
 QString player::name()

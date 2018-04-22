@@ -2,7 +2,7 @@
 #define PLAYER_H
 #include <QDateTime>
 #include <QString>
-
+#define CONNECTION_TIMEOUT 30 // 30 sec for evaluating if station is connected
 
 class player
 {

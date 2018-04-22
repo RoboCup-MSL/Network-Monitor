@@ -194,7 +194,7 @@ void gui::processAirodump()
         }
     }
     QDateTime *curTime= new QDateTime(QDate::currentDate(), QTime::currentTime());
-    QString command = QString::asprintf("sudo airodump-ng -c %d -M -d %s -w %s_%s_%s --output-format csv mon0",
+    QString command = QString::asprintf("sudo airodump-ng -c %d -M -d %s -w %s_%s_%s --write-interval 1 --output-format csv wlp7s0mon",
                                   channelList[comboBoxWifiChannel->currentIndex()] , qPrintable(*networkName),
                                    qPrintable(teamATableLabel->text().remove(" ")), qPrintable(teamBTableLabel->text().remove(" ")),
                                     qPrintable(curTime->toString("dd.MM.yyyy_hh:mm:ss")));
@@ -234,10 +234,6 @@ void gui::display()
         parseNetCapture(*cap_file_name);
     }
 
-    team *other;
-    other = get_team_by_name(team_none_name);
-    print_team(other);
-
     //Team A
     QStandardItemModel *teamAStations = new QStandardItemModel();
 
@@ -263,20 +259,6 @@ void gui::display()
     updateTable(teamBStations, 1);
 
 
-    team* teamNone;
-    if((teamNone=get_team_by_name(team_none_name))!=NULL)
-    {
-        QStandardItemModel *teamNoneStations = new QStandardItemModel();
-
-        for(int i=0;i<teamNone->get_team_size();i++)
-        {
-            player *teamNonePlayer;
-
-            teamNone->get_player(i,&teamNonePlayer);
-            teamNoneStations->insertRow(i, addPlayerToList(teamNonePlayer, true));
-        }
-        updateTable(teamNoneStations, 2);
-    }
 }
 
 QList<QStandardItem *> gui::addPlayerToList(player *player_to_add, bool showTeam)

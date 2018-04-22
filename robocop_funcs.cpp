@@ -194,12 +194,17 @@ void parseNetCapture(QString capture_file){
                qDebug("Station is already at database with %s, %s, %s", qPrintable((player1->mac())), qPrintable((player1->name())), qPrintable(player1->team_name()));
                player1->update(first_seen, last_seen, packets, power);
                qDebug("%s is transmitting %d pakets/s\n", qPrintable((player1->name())), (int)player1->pkts_second());
+               qDebug("Player %s - %s of team %s is %s", qPrintable(player1->mac()), qPrintable(player1->name()),
+                      qPrintable(player1->team_name()),(player1->isConnected()== true)?"connected" : "disconnected");
            }else{
                qDebug("New Station Detected in Capture FILE %s, will insert in database and update stats \n", qPrintable(sta_mac));
                player *sta_new = new player(sta_mac);
                sta_new->update(first_seen, last_seen, packets, power);
                AllPlayers.push_back(sta_new);
+               qDebug("%s is transmitting %d pakets/s\n", qPrintable((sta_new->name())), (int)sta_new->pkts_second());
+               qDebug("Player %s is %s", qPrintable(sta_new->mac()), (sta_new->isConnected()== true)?"connected" : "disconnected");
            }
+
        }
     }
     capture_descriptor.close();
