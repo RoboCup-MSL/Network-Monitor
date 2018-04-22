@@ -278,7 +278,7 @@ bool stop_iw_mon(QString iw){
     return (QProcess::execute(command)==QProcess::NormalExit);
 }
 
-bool isVaildMACaddr(QString new_mac){
+bool isValdMACaddr(QString new_mac){
     QRegExp macValidate("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$", Qt::CaseInsensitive, QRegExp::RegExp);
 
     return macValidate.exactMatch(new_mac);

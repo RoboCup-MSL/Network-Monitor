@@ -28,6 +28,6 @@ extern vector<player *>   AllPlayers;
 extern vector<team>     AllTeams;
 extern QString      team_none_name;
 
-bool isVaildMACaddr(QString new_mac);
+bool isValidMACaddr(QString new_mac);
 
 #endif // ROBOCOP_FUNCS_H
