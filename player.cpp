@@ -31,21 +31,22 @@ player::player(QString mac, QString team)
 void player::update(QDateTime first_seen, QDateTime last_seen, int packets, int power)
 {
     // Calculate packets per second rough aproximation
+    sta_pkts_sec  = 0;
 
     if((sta_last_time_seen.isValid() == true) && (last_seen.isValid() == true))
     {
+        qDebug("calc1");
         int diff_packets =  packets - sta_packets;
         qint64 diff_time_msec = sta_last_time_seen.msecsTo(last_seen);
-        if(diff_time_msec >=0)
-        sta_pkts_sec = diff_packets*1000/diff_time_msec;
+        if(diff_time_msec > 0)
+            sta_pkts_sec = diff_packets*1000/diff_time_msec;
     }else
         if((first_seen.isValid() == true) && (last_seen.isValid() == true))
         {
+
            qint64 diff_time_msec = first_seen.msecsTo(last_seen);
-           if(diff_time_msec >=0)
+           if(diff_time_msec > 0)
            sta_pkts_sec = packets*1000/diff_time_msec;
-        }else{
-            sta_pkts_sec = 0;
         }
 
     sta_first_time_seen = first_seen;

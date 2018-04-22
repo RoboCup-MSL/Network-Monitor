@@ -30,7 +30,7 @@ vector<team>     AllTeams;
 static player* findStation(QString sta_mac);
 QString team_none_name(TEAM_NONE);
 
-static bool isVaildMACaddr(QString new_mac);
+
 
 
 bool get_team_by_file(QString team_file){
@@ -111,6 +111,7 @@ bool get_team_by_file(QString team_file){
 
     AllTeams.push_back(*team1);
     delete team1;
+    team_descriptor.close();
     return true;
 }
 
@@ -215,6 +216,7 @@ void parseNetCapture(QString capture_file){
            }
        }
     }
+    capture_descriptor.close();
 }
 
 static player* findStation(QString sta_mac){
@@ -276,7 +278,7 @@ bool stop_iw_mon(QString iw){
     return (QProcess::execute(command)==QProcess::NormalExit);
 }
 
-static bool isVaildMACaddr(QString new_mac){
+bool isVaildMACaddr(QString new_mac){
     QRegExp macValidate("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$", Qt::CaseInsensitive, QRegExp::RegExp);
 
     return macValidate.exactMatch(new_mac);
