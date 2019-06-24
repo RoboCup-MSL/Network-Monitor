@@ -12,7 +12,9 @@ HEADERS  += \
     player.h \
     team.h \
     mainwindow.h \
-    robocop_funcs.h
+    robocop_funcs.h \
+    iw.h \
+    robo_log.h
 
 
 SOURCES += \
@@ -21,7 +23,8 @@ SOURCES += \
     player.cpp \
     robocop_funcs.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    iw.cpp
 
 
 RESOURCES += \
