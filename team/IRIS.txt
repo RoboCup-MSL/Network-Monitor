@@ -1,0 +1,15 @@
+#RoboCup Team Descriptor
+Team Name: IRIS
+#Players - All lines below will be interpreted as the Players of this team with the following notation: <PLAYER MAC ADDRESS>,<PLAYER ID>
+9c:da:3c:cb:87:11, R1
+ac:ed:5c:f1:65:b2, R2
+00:c2:c6:f1:8d:3f, R3
+00:c2:c6:f1:8c:04, R4
+00:c2:c6:fa:0c:9c, R5
+5c:93:a2;a6:b9:91, Dhiaul
+f0:03:8c:09:2c:ff, Revo
+ac:b5:7d:31:7a:6a, Pandu
+28:c2:dd:c8:6b:45, Azhar
+74:c6:3b:c9:bd:05, Dwiki
+f4:8c:50:6f:b9:68, Basestation
+60:45:cb:c3:0f:27, Basestation_w

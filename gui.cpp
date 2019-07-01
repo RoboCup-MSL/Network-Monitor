@@ -440,11 +440,15 @@ void gui::display()
         teamAStations->removeRow(teamARows-1-i);
     }
     //add rows
+    int row_cnt = 0;
     for(int i=0;i<AllTeams[comboBoxTeamA->currentIndex()].get_team_size();i++)
     {
         player *teamAPlayer;
         AllTeams[comboBoxTeamA->currentIndex()].get_player(i,&teamAPlayer);
-        teamAStations->insertRow(i, addPlayerToList(teamAPlayer, false));
+        if(teamAPlayer->packets()>0){
+            teamAStations->insertRow(row_cnt, addPlayerToList(teamAPlayer, false));
+            row_cnt++;
+        }
     }
     updateTable(TEAMA);
 
@@ -464,11 +468,15 @@ void gui::display()
     teamBTableLabel = new QLabel(teamTh);
     gameLayout->addWidget(teamBTableLabel, TEAMBTABLELABELROW,0,1,2);
     //add rows
+    row_cnt = 0;
     for(int i=0;i<AllTeams[comboBoxTeamB->currentIndex()].get_team_size();i++)
     {
         player *teamBPlayer;
         AllTeams[comboBoxTeamB->currentIndex()].get_player(i, &teamBPlayer);
-        teamBStations->insertRow(i, addPlayerToList(teamBPlayer, false));
+        if(teamBPlayer->packets()>0){
+            teamBStations->insertRow(row_cnt, addPlayerToList(teamBPlayer, false));
+            row_cnt++;
+        }
     }
     updateTable(TEAMB);
 

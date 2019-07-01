@@ -1,0 +1,16 @@
+#RoboCup Team Descriptor
+Team Name: Falcons
+#Players - All lines below will be interpreted as the Players of this team with the following notation: <PLAYER MAC ADDRESS>,<PLAYER ID>
+00:16:6f:f7:f6:20, R1
+00:16:6f:f7:f1:7a, R2
+00:16:6f:f7:f1:d4, R3
+00:16:6f:f7:f0:e4, R4
+00:16:6f:f7:f8:23, R5
+00:16:6f:f7:f1:1b, R6
+60:67:20:00:5c:54, coach
+3c:a9:f4:71:f7:c8, EDEV
+98:29:a6:af:8a:0a, dalek
+24:77:03:ec:a8:7c, koekwaus
+24:77:03:ec:b9:a0, pingu
+24:77:03:8d:6f:d4, witte
+24:77:03:8c:e1:70, butter

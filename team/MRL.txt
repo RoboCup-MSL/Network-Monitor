@@ -1,9 +1,10 @@
 #RoboCup Team Descriptor
 Team Name: MRL
 #Players - All lines below will be interpreted as the Players of this team with the following notation: <PLAYER MAC ADDRESS>,<PLAYER ID>
-E8:B1:FC:A4:E0:E3, CoachBox 
-E8:B1:FC:A4:DE:04, Robot1
-54:B8:0A:00:08:21, Robot2
-54:B8:0A:00:02:AA, Robot3
-54:B8:0A:00:03:21, Robot4
-54:B8:0A:00:03:02, Robot5
+E8:B1:FC:A4:DE:04, R1
+54:B8:0A:00:08:21, R2
+54:B8:0A:00:02:AA, R3
+54:B8:0A:00:03:21, R4
+54:B8:0A:00:03:02, R5
+E8:B1:FC:A4:E0:E3, Coach
+00:16:EA:EF:23:5A, Dev

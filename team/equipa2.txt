@@ -1,6 +1,0 @@
-#RoboCup Team Descriptor
-Team Name: MANGO POWER
-#Players - All lines below will be interpreted as the Players of this team with the following notation: <PLAYER MAC ADDRESS>,<PLAYER ID>
-38:A4:ED:A1:EC:83, Redmi3S
-0A:06:07:08:09:0e, PIPOCAS
-0B:06:07:08:09:0a, COELHINHOS
