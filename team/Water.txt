@@ -1,0 +1,29 @@
+#RoboCup Team Descriptor
+Team Name: Water
+#Players - All lines below will be interpreted as the Players of this team with the following notation: <PLAYER MAC ADDRESS>,<PLAYER ID>
+DC:9F:DB:3C:21:8B, Robot Bridge 1
+DC:9F:DB:3C:21:7A, Robot Bridge 2
+DC:9F:DB:3C:22:A6, Robot Bridge 3
+DC:9F:DB:3C:22:C3, Robot Bridge 4
+DC:9F:DB:3C:23:36, Robot Bridge 5
+68:72:51:20:7D:12, Robot Bridge 6
+A0:C5:89:6C:04:21, Robot 1
+A0:C5:89:15:B8:23, Robot 2
+A0:C5:89:6D:11:B8, Robot 3
+A0:C5:89:6B:D8:48, Robot 4
+A0:C5:89:6B:F3:69, Robot 5
+A0:C5:89:63:AE:25, Robot 6
+10:0B:A9:6C:D2:78, Dev1
+08:11:96:08:7C:34, Dev2
+A0:88:B4:57:0F:28, Dev3
+A0:88:B4:59:F3:80, Dev4
+08:11:96:11:0C:08, Dev5
+60:67:20:C4:F8:D8, Dev6
+14:B9:68:68:D2:2B, Dev7
+10:02:B5:CB:4A:C1, Dev8
+00:1F:3C:CE:E8:75, Dev9
+00:1D:72:9E:82:CE, Dev10
+00:0E:C6:FE:27:F6, Dev11
+00:0E:C6:D2:F2:BD, Dev12
+00:0E:C6:FE:28:ED, Dev13
+00:0E:C6:FE:5D:28, Dev14

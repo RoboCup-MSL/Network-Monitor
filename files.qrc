@@ -1,8 +1,5 @@
 <RCC>
     <qresource prefix="/">
         <file>doc/Team_template.txt</file>
-        <file>team/equipaA.csv</file>
-        <file>team/equipaB.csv</file>
-        <file>team/minon-02.csv</file>
     </qresource>
 </RCC>

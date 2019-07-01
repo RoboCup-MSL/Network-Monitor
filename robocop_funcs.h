@@ -4,6 +4,8 @@
 #include <QString>
 #include <vector>
 
+#include "robo_log.h"
+
 bool get_team_by_file(QString team_file);
 
 void get_all_teams(void);
@@ -28,5 +30,7 @@ extern vector<player *>   AllPlayers;
 extern vector<team>     AllTeams;
 
 bool isValidMACaddr(QString new_mac);
+
+void clean_AllTeam_stat(void);
 
 #endif // ROBOCOP_FUNCS_H

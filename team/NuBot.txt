@@ -1,0 +1,18 @@
+#RoboCup Team Descriptor
+Team Name: NuBot
+#Players - All lines below will be interpreted as the Players of this team with the following notation: <PLAYER MAC ADDRESS>,<PLAYER ID>
+48:51:b7:eb:44:0c, R1
+48:51:b7:eb:38:a4, R2
+7c:5c:f8:3e:99:a5, R3
+7c:5c:f8:3e:97:f2, R4
+ac:fd:ce:32:4e:02, R5
+48:51:b7:eb:71:43, R6
+e4:a4:71:90:10:37, Bingxin Han
+68:ec:c5:62:57:69, Zhiqian Zhou
+9c:b6:d0:1f:10:a7, Bailiang Chen
+d4:6d:6d:81:ad:a8, Xiao Li
+e4:a4:71:6b:ca:fb, Yang Zhao
+30:10:b3:22:79:b8, Zhengyu Zhong
+70:1c:e7:2a:c9:7a, Zirui Guo
+00:15:00:b9:d4:cb, Pengming Zhu
+c8:5b:76:3d:b4:f0, coach

@@ -1,0 +1,13 @@
+#RoboCup Team Descriptor
+Team Name: CAMBADA
+#Players - All lines below will be interpreted as the Players of this team with the following notation: <PLAYER MAC ADDRESS>,<PLAYER ID>
+84:3a:4b:64:77:dc, R1
+84:3a:4b:64:76:bc, R2
+84:3a:4b:65:09:f8, R3
+84:3a:4b:65:0b:92, R4
+84:3a:4b:65:09:8e, R5
+a4:4e:31:c6:74:20, R6
+68:ec:c5:43:87:12, MSI
+44:85:00:E5:9F:39, Toshiba1
+34:de:1a:8a:27:67, Toshiba2
+94:b8:6d:5a:28:b4, ThinkPad

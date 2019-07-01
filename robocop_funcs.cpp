@@ -16,6 +16,7 @@ enum STATION_PROPERTIES
     LAST_TIME_SEEN = 2,
     POWER = 3,
     PACKETS = 4,
+    BYTES  = 5,
 };
 
 enum PLAYER_PROPERTIES{
@@ -23,11 +24,12 @@ enum PLAYER_PROPERTIES{
     PLAYER_NAME = 1,
 };
 
-#define MIN_PROPERTIES 5
+#define MIN_PROPERTIES 6
 
 vector<player *>   AllPlayers;
 vector<team>     AllTeams;
 static player* findStation(QString sta_mac);
+static void checkTeams();
 
 
 
@@ -60,15 +62,21 @@ bool get_team_by_file(QString team_file){
         if(line.startsWith("Team Name:") == true){
             QStringList tname = line.split("Team Name:", QString::SkipEmptyParts);
             qDebug() << "Found Team Name: " <<  qPrintable((tname.at(0)).trimmed()) << endl;
+
             if(get_team_by_name(tname.at(0)) != NULL){
                 qDebug("Team %s Already Exists in the system, will skip", qPrintable(tname.at(0).trimmed()));
                 return false;
             }
+
+            ROBOLOG_INFO("%s: Found TEAM: %s", TEAM_INFO, qPrintable(tname.at(0)));
+
             team1 = new team(tname.at(0));
 
             while(!tstream.atEnd()){
+
                 QString line2 = tstream.readLine();
-                if(line==NULL)
+
+                if(line2==NULL || (line2.trimmed().isEmpty()==true))
                 {
                     qDebug() << "line is NULL so skip" << endl;
                     continue;
@@ -98,6 +106,7 @@ bool get_team_by_file(QString team_file){
                     player* player1 = new player(tplayer.at(PLAYER_NAME).trimmed(), tplayer.at(PLAYER_MAC).trimmed(), tname.at(0).trimmed());
                     AllPlayers.push_back(player1);
                     team1->insertPlayer(player1);
+                    ROBOLOG_INFO("%s: Team %s PLAYER %s , %s ", TEAM_INFO, qPrintable(tname.at(0).trimmed()), qPrintable(tplayer.at(PLAYER_NAME).trimmed()), qPrintable(tplayer.at(PLAYER_MAC).trimmed()));
 
                 }
                 else{
@@ -112,6 +121,9 @@ bool get_team_by_file(QString team_file){
     AllTeams.push_back(*team1);
     delete team1;
     team_descriptor.close();
+
+
+
     return true;
 }
 
@@ -179,10 +191,11 @@ void parseNetCapture(QString capture_file){
            QDateTime first_seen = QDateTime::fromString(sta_props.at(FIRST_TIME_SEEN).trimmed(),"yyyy-MM-dd hh:mm:ss");
            QDateTime last_seen = QDateTime::fromString(sta_props.at(LAST_TIME_SEEN).trimmed(),"yyyy-MM-dd hh:mm:ss");
            int power = sta_props.at(POWER).toInt();
-           int packets = sta_props.at(PACKETS).toInt();
+           uint packets = sta_props.at(PACKETS).toUInt();
+           uint bytes = sta_props.at(BYTES).toUInt();
            qDebug("##Candidate Station Found \n");
-           qDebug("STA_MAC %s, First Time Seen %s, Last Time Seen %s, Power %d dBm, Packets %d \n",
-                  qPrintable(sta_mac), qPrintable(first_seen.toString("dd-MM-yyyy hh:mm:ss")), qPrintable(last_seen.toString("dd-MM-yyyy hh:mm:ss")), power, packets);
+           qDebug("STA_MAC %s, First Time Seen %s, Last Time Seen %s, Power %d dBm, Packets %u, Bytes %u \n",
+                  qPrintable(sta_mac), qPrintable(first_seen.toString("dd-MM-yyyy hh:mm:ss")), qPrintable(last_seen.toString("dd-MM-yyyy hh:mm:ss")), power, packets, bytes);
 
            if(isValidMACaddr(sta_mac)==false){
                    qDebug("MAC %s is Invalid, skipping",qPrintable(sta_mac));
@@ -192,22 +205,41 @@ void parseNetCapture(QString capture_file){
 
            if((player1 = findStation(sta_mac) ) != NULL){
                qDebug("Station is already at database with %s, %s, %s", qPrintable((player1->mac())), qPrintable((player1->name())), qPrintable(player1->team_name()));
-               player1->update(first_seen, last_seen, packets, power);
+               player1->update(first_seen, last_seen, packets, power, bytes);
                qDebug("%s is transmitting %d pakets/s\n", qPrintable((player1->name())), (int)player1->pkts_second());
+               qDebug("%s is transmitting %d bytes/sec \n", qPrintable((player1->name())), (int)player1->throughput());
                qDebug("Player %s - %s of team %s is %s", qPrintable(player1->mac()), qPrintable(player1->name()),
-                      qPrintable(player1->team_name()),(player1->isConnected()== true)?"connected" : "disconnected");
+               qPrintable(player1->team_name()),(player1->isConnected()== true)?"connected" : "disconnected");
+               team *p_team;
+
+               if(player1->isConnected() ==  true){
+                   if(((p_team = get_team_by_name(player1->team_name()))!=NULL) && (p_team->is_inGame() == true))
+                       ROBOLOG_INFO("%s: Player %s, %s - %s is connected and transmitting %d kbits/s", STATION_INFO, qPrintable(player1->name()), qPrintable(player1->mac()), qPrintable(player1->team_name()),player1->throughput()*8/1000);
+                   else
+                       if(((p_team = get_team_by_name(player1->team_name()))!=NULL) && (p_team->is_inGame() == false))
+                               ROBOLOG_ALERT("%s: OUT OF GAME Player/Station %s, %s - %s is connected and transmitting %d kbits/s", STATION_ALERT, qPrintable(player1->name()), qPrintable(player1->mac()), qPrintable(player1->team_name()),player1->throughput()*8/1000);
+                   else
+                           if(((p_team = get_team_by_name(player1->team_name()))==NULL))
+                           ROBOLOG_ALERT("%s: OUT OF GAME Player/Station %s, %s - %s is connected and transmitting %d kbits/s", STATION_ALERT, qPrintable(player1->name()), qPrintable(player1->mac()), qPrintable(player1->team_name()), player1->throughput()*8/1000);
+               }
+
+
            }else{
                qDebug("New Station Detected in Capture FILE %s, will insert in database and update stats \n", qPrintable(sta_mac));
                player *sta_new = new player(sta_mac);
-               sta_new->update(first_seen, last_seen, packets, power);
+               sta_new->update(first_seen, last_seen, packets, power, bytes);
                AllPlayers.push_back(sta_new);
                qDebug("%s is transmitting %d pakets/s\n", qPrintable((sta_new->name())), (int)sta_new->pkts_second());
+               qDebug("%s is transmitting %d bytes/sec \n", qPrintable((sta_new->name())), (int)sta_new->throughput());
                qDebug("Player %s is %s", qPrintable(sta_new->mac()), (sta_new->isConnected()== true)?"connected" : "disconnected");
+
+               ROBOLOG_ALERT("%s: New Station Detected %s, transmiting %d kbits/sec", STATION_ALERT, qPrintable(sta_new->mac()), sta_new->throughput()*8/1000);
            }
 
        }
     }
     capture_descriptor.close();
+    checkTeams(); //update team info
 }
 
 static player* findStation(QString sta_mac){
@@ -254,6 +286,12 @@ void clean_AllPlayers_stat(void){
     }
 }
 
+void clean_AllTeam_stat(void){
+    for(uint i = 0; i < AllTeams.size(); i++){
+        AllTeams[i].clean_stats();
+    }
+}
+
 
 bool start_iw_mon(QString iw){
     QString command;
@@ -274,4 +312,32 @@ bool isValidMACaddr(QString new_mac){
 
     return macValidate.exactMatch(new_mac);
 }
+
+static void checkTeams(){
+
+    for(uint i = 0; i<AllTeams.size(); i++){
+        if(AllTeams[i].is_inGame() == true){
+            AllTeams[i].updateTeam();
+            if(AllTeams[i].bwAlarmed()){
+                qDebug("ALARM: Team %s is over bw limit spending %d", qPrintable(AllTeams[i].name()),AllTeams[i].throughput()*8/1000);
+                ROBOLOG_ALERT("%s Team %s is overspending bw with kbit/s %d",BW_ALERT,qPrintable(AllTeams[i].name()),AllTeams[i].throughput()*8/1000);
+
+            }else{
+                qDebug("INFO: Team %s is spending %d", qPrintable(AllTeams[i].name()),AllTeams[i].throughput()*8/1000);
+                ROBOLOG_INFO("%s Team %s is spending bw with kbit/s %d",BW_INFO, qPrintable(AllTeams[i].name()), AllTeams[i].throughput()*8/1000);
+
+
+            }
+
+            }
+
+    }
+
+
+
+
+
+}
+
+
 

@@ -1,0 +1,6 @@
+.svn
+*.o
+*.a
+.vscode
+Makefile
+policia
