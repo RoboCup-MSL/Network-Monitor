@@ -4,9 +4,7 @@
 msl-monitor-roboc0p depends on qt5, aircrack-ng, and iwlist and nmcli
 
 ## aircrack-ng
-* Get sources with:
-
-`git clone https://github.com/aircrack-ng/aircrack-ng`
+A copy of the aircrack-ng fork is included in this repo, navigate to the aircrack-ng folder and compile and install as follows:
 
 * Install packages needed:
 
